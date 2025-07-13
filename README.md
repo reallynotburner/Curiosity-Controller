@@ -2,7 +2,7 @@
 
 ## Goal
 ###
-I want to drive around a highly functional model of the Mars Science Laboratory (MSL), named [Curiosity](https://www.jpl.nasa.gov/missions/mars-science-laboratory-curiosity-rover-msl/).  It will have working rocker-bogie suspension, and 4 steerable motors so it can spin in place without skid steering like a tank.  I'm making it as small as I can using [Sanyo-style micro gearmotors](https://www.amazon.com/gp/aw/d/B07FVMVGM3/?_encoding=UTF8), which are inexpensive, strong, and fairly small.  The motors have to fit inside the wheel hubs and the steering mechanism without altering the proportions of the model too much for my taste.  Therefore the smallest I can make it is 1/6 scale, I could go smaller but it would mean more expesnive smaller motors.
+I want to drive around a highly functional model of the Mars Science Laboratory (MSL), named [Curiosity](https://www.jpl.nasa.gov/missions/mars-science-laboratory-curiosity-rover-msl/).  It will have working rocker-bogie suspension, and 4 steerable motors so it can spin in place without skid steering like a tank.  I'm making it as small as I can using [Sanyo-style micro gearmotors](https://www.amazon.com/gp/aw/d/B07FVMVGM3/?_encoding=UTF8), which are inexpensive, strong, and fairly small.  The motors have to fit inside the wheel hubs and the steering mechanism without altering the proportions of the model too much for my taste.  Therefore the smallest I can make it is 1/6 scale, I could go smaller but it would mean more expensive smaller motors.
 
 ## Hardware
 ### Controller

@@ -1,39 +1,31 @@
-html {
-    font-family: Arial, Helvetica, sans-serif;
-    display: inline-block;
-    text-align: center;
-}
-h1 {
-    font-size: 1.8rem;
-    color: white;
-}
-.topnav {
-    overflow: hidden;
-    background-color: #0A1128;
-}
 body {
-    margin: 0;
+    background-color: darkslategray;
 }
-.content {
-    padding: 50px;
+div {
+  margin: 0em;
+  padding: 2em;
 }
-.card-grid {
-    max-width: 800px;
-    margin: 0 auto;
-    display: grid;
-    grid-gap: 2rem;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+#target1 {
+  background: lightgray;
+  border: 1px solid black;
 }
-.card {
-    background-color: white;
-    box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
+#target2 {
+  background: lightgray;
+  border: 1px solid black;
 }
-.card-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #034078
+.flex-container {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+  background-color: darkgray;
+  margin: 30px;
 }
-.reading {
-    font-size: 1.2rem;
-    color: #1282A2;
+
+.flex-container > div {
+  background-color: #f1f1f1;
+  height: 200px;
+  width: 200px;
+  margin: 30px;
+  text-align: center;
+  font-size: 30px;
 }

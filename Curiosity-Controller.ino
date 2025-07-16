@@ -2,8 +2,10 @@
   Curiosity Controller
   Drivable scale model of the Mars Science Laboratory, AKA, "Curiosity"
   Based on code examples by:
-  Rui Santos & Sara Santos - Random Nerd Tutorials
-  Complete instructions at https://RandomNerdTutorials.com/esp32-websocket-server-sensor/
+  Rui Santos & Sara Santos - Random Nerd Tutorials: 
+  https://RandomNerdTutorials.com/esp32-websocket-server-sensor/
+  Frank Poth:
+  https://github.com/pothonprogramming/pothonprogramming.github.io/tree/master/content/touch-controller
 
   reallynotburner@gmail.com
   Joshua Brown 2025 

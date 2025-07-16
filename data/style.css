@@ -1,31 +1,36 @@
-body {
-    background-color: darkslategray;
-}
-div {
-  margin: 0em;
-  padding: 2em;
-}
-#target1 {
-  background: lightgray;
-  border: 1px solid black;
-}
-#target2 {
-  background: lightgray;
-  border: 1px solid black;
-}
-.flex-container {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-around;
-  background-color: darkgray;
-  margin: 30px;
+/* Frank Poth 10/03/2017 */
+
+* {
+
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+
 }
 
-.flex-container > div {
-  background-color: #f1f1f1;
-  height: 200px;
-  width: 200px;
-  margin: 30px;
-  text-align: center;
-  font-size: 30px;
+html {
+
+  height:100%;
+  width:100%;
+
+}
+
+body {
+
+  align-content:space-around;
+  background-color:#202830;
+  color:#ffffff;
+  display:grid;
+  justify-content:center;
+  min-height:100%;
+  text-align:center;
+  width:100%;
+
+}
+
+canvas {
+
+  background-color:#ffffff;
+  justify-self:center;
+
 }

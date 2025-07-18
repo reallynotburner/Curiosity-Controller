@@ -23,7 +23,6 @@ body {
 }
 
 canvas {
-  background-color:#ffffff;
-  justify-self:center;
-
+  background-color: #ffffff;
+  justify-self: center;
 }

@@ -34,9 +34,10 @@
   // handles everything to do with user input:
   controller = {
     buttons: [
-      new Button(0, 120, 60, 60, "#f09000", "jump"),
-      new Button(190, 160, 60, 60, "#0090f0", "left"),
-      new Button(260, 160, 60, 60, "#0090f0", "right"),
+      new Button(0, 130, 100, 100, "#ff0000", "left"),
+      new Button(130, 0, 100, 100, "#0000ff", "forward"),
+      new Button(130, 260, 100, 100, "#00ff00", "backward"),
+      new Button(260, 130, 100, 100, "#ff00ff", "right"),
     ],
 
     testButtons: function (target_touches) {
@@ -80,6 +81,10 @@
 
       if (this.buttons[2].active) {
         display.message.innerHTML += this.buttons[2].name;
+      }
+
+      if (this.buttons[3].active) {
+        display.message.innerHTML += this.buttons[3].name;
       }
 
       display.message.innerHTML += " -";
@@ -179,9 +184,10 @@
         );
       }
 
-      display.output.canvas.height = Math.floor(
-        display.output.canvas.width * 0.6875
-      );
+      display.output.canvas.height = display.output.canvas.width;
+      // display.output.canvas.height = Math.floor(
+      //   display.output.canvas.width * 0.6875
+      // );
 
       // these next two lines are used for adjusting and scaling user touch input coordinates:
       display.bounding_rectangle =
@@ -195,16 +201,21 @@
   // handles game logic:
   game = {
     loop: function (time_stamp) {
-      if (controller.buttons[0].active && game.square.jumping == false) {
+      if (controller.buttons[0].active) {
+        game.square.velocity_x -= 0.5;
+      }
+
+      if (controller.buttons[1].active && game.square.jumping == false) {
         game.square.velocity_y = -20;
         game.square.jumping = true;
       }
 
-      if (controller.buttons[1].active) {
-        game.square.velocity_x -= 0.5;
+      if (controller.buttons[2].active && game.square.jumping == false) {
+        game.square.velocity_y = -20;
+        game.square.jumping = true;
       }
 
-      if (controller.buttons[2].active) {
+      if (controller.buttons[3].active) {
         game.square.velocity_x += 0.5;
       }
 
@@ -243,7 +254,7 @@
     },
 
     square: {
-      color: "#ff0000",
+      color: "#777777",
       height: 32,
       jumping: true,
       velocity_x: 0,
@@ -257,10 +268,11 @@
   // initialize the application
 
   // size the buffer:
-  display.buffer.canvas.height = 220;
-  display.buffer.canvas.width = 320;
+  display.buffer.canvas.height = 360;
+  display.buffer.canvas.width = 360;
 
-  window.addEventListener("resize", display.resize);
+  window.addEventListener("change", display.resize);
+
   // setting passive:false allows you to use preventDefault in event listeners:
   display.output.canvas.addEventListener("touchend", controller.touchEnd, {
     passive: false,

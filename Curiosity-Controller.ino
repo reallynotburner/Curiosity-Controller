@@ -63,8 +63,13 @@ void notifyClients(String sensorReadings) {
 void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
   AwsFrameInfo *info = (AwsFrameInfo*)arg;
   if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
+    // How to ingest the incoming data from web clients, without weird symbols and overflow values:
+    String rawData = (char *)data;
+    String message = rawData.substring(0, len);
+    Serial.println(message);
     String sensorReadings = getSensorReadings();
-    Serial.print(sensorReadings);
+    Serial.println(sensorReadings);
+    // How to send data out to all web clients
     notifyClients(sensorReadings);
   }
 }
@@ -113,7 +118,7 @@ void setup() {
 void loop() {
   if ((millis() - lastTime) > timerDelay) {
     String sensorReadings = getSensorReadings();
-    Serial.print(sensorReadings);
+    // Serial.print(sensorReadings);
     notifyClients(sensorReadings);
     lastTime = millis();
 

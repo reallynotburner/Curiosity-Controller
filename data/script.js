@@ -6,16 +6,16 @@
   // Init web socket when the page loads
 
   function getReadings() {
-    websocket.send(`{key: 'value', otherKey: 'otherValue', timestamp: ${Date.now()}}`);
+    websocket.send(
+      `{key: 'value', otherKey: 'otherValue', timestamp: ${Date.now()}}`
+    );
   }
 
-
-    console.log("Trying to open a WebSocket connection…");
-    websocket = new WebSocket(gateway);
-    websocket.onopen = onOpen;
-    websocket.onclose = onClose;
-    websocket.onmessage = onMessage;
-
+  console.log("Trying to open a WebSocket connection…");
+  websocket = new WebSocket(gateway);
+  websocket.onopen = onOpen;
+  websocket.onclose = onClose;
+  websocket.onmessage = onMessage;
 
   // When websocket is established, call the getReadings() function
   function onOpen(event) {

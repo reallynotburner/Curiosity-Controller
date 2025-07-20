@@ -21,8 +21,32 @@
 #include <Arduino_JSON.h>
 
 // Replace with your network credentials
-const char* ssid = "curiosity";
-const char* password = "callyourmom";
+const char *ssid = "curiosity";
+const char *password = "callyourmom";
+
+// Motor Driver pins
+const int PWM01 = 26;  // 16 corresponds to GPIO 16
+const int AN1 = 33;
+const int AN2 = 25;
+const int STBY = 27;
+
+// setting motor PWM properties
+const int freq = 5000;
+const int resolution = 8;
+
+void initMotor() {
+  // configure motor PWM
+  ledcAttach(PWM01, freq, resolution);
+
+  // set the control pins as outputs
+  pinMode(AN1, OUTPUT);
+  pinMode(AN2, OUTPUT);
+  pinMode(STBY, OUTPUT);
+
+  digitalWrite(STBY, HIGH);
+  digitalWrite(AN1, HIGH);
+  digitalWrite(AN2, LOW);
+}
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -39,9 +63,9 @@ unsigned long timerDelay = 10000;
 
 
 // Get Sensor Readings and return JSON object
-String getSensorReadings(){
+String getSensorReadings() {
   readings["temperature"] = String("hot!");
-  readings["humidity"] =  String("moist!");
+  readings["humidity"] = String("moist!");
   readings["pressure"] = String("vacuous!");
   String jsonString = JSON.stringify(readings);
   return jsonString;
@@ -60,15 +84,53 @@ void notifyClients(String sensorReadings) {
   ws.textAll(sensorReadings);
 }
 
+void updateMotors(String message) {
+  JSONVar messageObject = JSON.parse(message);
+  if (JSON.typeof(messageObject) == "undefined") {
+    Serial.println("Parsing input failed!");
+    return;
+  }
+
+  if (messageObject.hasOwnProperty("forward") && messageObject.hasOwnProperty("backward")) {
+    if (messageObject["forward"] && messageObject["backward"]) {
+      Serial.println("Motor control Stalemate, no action");
+      digitalWrite(AN1, LOW);
+      digitalWrite(AN2, LOW);
+      ledcWrite(PWM01, 0);
+      return;
+    } else if (messageObject["forward"]) {
+      Serial.println("Motor control forward");
+      digitalWrite(AN1, HIGH);
+      digitalWrite(AN2, LOW);
+      ledcWrite(PWM01, 128);
+    } else if (messageObject["backward"]) {
+      Serial.println("Motor control backward");
+      digitalWrite(AN1, LOW);
+      digitalWrite(AN2, HIGH);
+      ledcWrite(PWM01, 128);
+    } else {
+      Serial.println("Motor control stopping");
+      digitalWrite(AN1, LOW);
+      digitalWrite(AN2, LOW);
+      ledcWrite(PWM01, 0);
+    }
+  }
+}
+
 void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
-  AwsFrameInfo *info = (AwsFrameInfo*)arg;
+  AwsFrameInfo *info = (AwsFrameInfo *)arg;
   if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
     // How to ingest the incoming data from web clients, without weird symbols and overflow values:
     String rawData = (char *)data;
     String message = rawData.substring(0, len);
     Serial.println(message);
+
+
+
+    updateMotors(message);
+
     String sensorReadings = getSensorReadings();
-    Serial.println(sensorReadings);
+    // Serial.println(sensorReadings);
     // How to send data out to all web clients
     notifyClients(sensorReadings);
   }
@@ -98,7 +160,7 @@ void initWebSocket() {
 
 void setup() {
   Serial.begin(115200);
-  
+
   WiFi.softAP(ssid, password);
 
   initLittleFS();
@@ -113,6 +175,9 @@ void setup() {
 
   // Start server
   server.begin();
+
+  // Setup Motors
+  initMotor();
 }
 
 void loop() {

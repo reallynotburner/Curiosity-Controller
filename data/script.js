@@ -14,17 +14,11 @@
     websocket.onmessage = onMessage;
   }
 
-  function sendMessage() {
-    websocket.send(
-      `{left: 'value', otherKey: 'otherValue', timestamp: ${Date.now()}}`
-    );
-  }
+  window.addEventListener("load", initWebSocket);
 
   // When websocket is established, call the getReadings() function
   function onOpen(event) {
-    console.log("Connection opened");
-    sendMessage();
-    setInterval(sendMessage, 3000); // Call getReadings every 3 seconds
+    console.log("WebSocket Connection opened");
   }
 
   function onClose(event) {
@@ -83,7 +77,7 @@
     },
 
     testButtons: function (target_touches) {
-      var button, index0, index1, touch;
+      var index, touch;
 
       // loop through all buttons:
       for (let button in this.buttons) {
@@ -92,8 +86,8 @@
           this.buttons[button].active = false;
 
           // loop through all touch objects:
-          for (index1 = target_touches.length - 1; index1 > -1; --index1) {
-            touch = target_touches[index1];
+          for (index = target_touches.length - 1; index > -1; --index) {
+            touch = target_touches[index];
 
             // make sure the touch coordinates are adjusted for both the canvas offset and the scale ratio of the buffer and output canvases:
             if (
@@ -110,6 +104,16 @@
           }
         }
       }
+
+      websocket.send(
+        JSON.stringify({
+          left: this.buttons.left.active,
+          right: this.buttons.right.active,
+          forward: this.buttons.forward.active,
+          backward: this.buttons.backward.active,
+          timestamp: Date.now()
+        })
+      );
 
       display.message.innerHTML =
         "touches: " + event.targetTouches.length + "<br>- ";

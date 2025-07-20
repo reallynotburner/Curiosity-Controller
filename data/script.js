@@ -3,25 +3,28 @@
 (function () {
   var gateway = `ws://${window.location.hostname}/ws`;
   var websocket;
+
   // Init web socket when the page loads
 
-  function getReadings() {
-    websocket.send(
-      `{key: 'value', otherKey: 'otherValue', timestamp: ${Date.now()}}`
-    );
+  function initWebSocket() {
+    console.log("Trying to open a WebSocket connection…");
+    websocket = new WebSocket(gateway);
+    websocket.onopen = onOpen;
+    websocket.onclose = onClose;
+    websocket.onmessage = onMessage;
   }
 
-  console.log("Trying to open a WebSocket connection…");
-  websocket = new WebSocket(gateway);
-  websocket.onopen = onOpen;
-  websocket.onclose = onClose;
-  websocket.onmessage = onMessage;
+  function sendMessage() {
+    websocket.send(
+      `{left: 'value', otherKey: 'otherValue', timestamp: ${Date.now()}}`
+    );
+  }
 
   // When websocket is established, call the getReadings() function
   function onOpen(event) {
     console.log("Connection opened");
-    getReadings();
-    setInterval(getReadings, 3000); // Call getReadings every 3 seconds
+    sendMessage();
+    setInterval(sendMessage, 3000); // Call getReadings every 3 seconds
   }
 
   function onClose(event) {
@@ -72,58 +75,56 @@
 
   // handles everything to do with user input:
   controller = {
-    buttons: [
-      new Button(0, 130, 100, 100, "#ff0000", "left"),
-      new Button(130, 0, 100, 100, "#0000ff", "forward"),
-      new Button(130, 260, 100, 100, "#00ff00", "backward"),
-      new Button(260, 130, 100, 100, "#ff00ff", "right"),
-    ],
+    buttons: {
+      left: new Button(0, 130, 100, 100, "#ff0000", "left"),
+      forward: new Button(130, 0, 100, 100, "#0000ff", "forward"),
+      backward: new Button(130, 260, 100, 100, "#00ff00", "backward"),
+      right: new Button(260, 130, 100, 100, "#ff00ff", "right"),
+    },
 
     testButtons: function (target_touches) {
       var button, index0, index1, touch;
 
       // loop through all buttons:
-      for (index0 = this.buttons.length - 1; index0 > -1; --index0) {
-        button = this.buttons[index0];
-        button.active = false;
+      for (let button in this.buttons) {
+        if (controller.buttons.hasOwnProperty(button)) {
+          // Important to filter out inherited properties
+          this.buttons[button].active = false;
 
-        // loop through all touch objects:
-        for (index1 = target_touches.length - 1; index1 > -1; --index1) {
-          touch = target_touches[index1];
+          // loop through all touch objects:
+          for (index1 = target_touches.length - 1; index1 > -1; --index1) {
+            touch = target_touches[index1];
 
-          // make sure the touch coordinates are adjusted for both the canvas offset and the scale ratio of the buffer and output canvases:
-          if (
-            button.containsPoint(
-              (touch.clientX - display.bounding_rectangle.left) *
-                display.buffer_output_ratio,
-              (touch.clientY - display.bounding_rectangle.top) *
-                display.buffer_output_ratio
-            )
-          ) {
-            button.active = true;
-            break; // once the button is active, there's no need to check if any other points are inside, so continue
+            // make sure the touch coordinates are adjusted for both the canvas offset and the scale ratio of the buffer and output canvases:
+            if (
+              this.buttons[button].containsPoint(
+                (touch.clientX - display.bounding_rectangle.left) *
+                  display.buffer_output_ratio,
+                (touch.clientY - display.bounding_rectangle.top) *
+                  display.buffer_output_ratio
+              )
+            ) {
+              this.buttons[button].active = true;
+              break; // once the button is active, there's no need to check if any other points are inside, so continue
+            }
           }
         }
       }
 
-      // this is all just for displaying the messages when buttons are pressed. This isn't necessary code.
       display.message.innerHTML =
         "touches: " + event.targetTouches.length + "<br>- ";
 
-      if (this.buttons[0].active) {
-        display.message.innerHTML += this.buttons[0].name;
+      if (this.buttons.left.active) {
+        display.message.innerHTML += this.buttons.left.name;
       }
-
-      if (this.buttons[1].active) {
-        display.message.innerHTML += this.buttons[1].name;
+      if (this.buttons.right.active) {
+        display.message.innerHTML += this.buttons.right.name;
       }
-
-      if (this.buttons[2].active) {
-        display.message.innerHTML += this.buttons[2].name;
+      if (this.buttons.forward.active) {
+        display.message.innerHTML += this.buttons.forward.name;
       }
-
-      if (this.buttons[3].active) {
-        display.message.innerHTML += this.buttons[3].name;
+      if (this.buttons.backward.active) {
+        display.message.innerHTML += this.buttons.backward.name;
       }
 
       display.message.innerHTML += " -";
@@ -187,8 +188,6 @@
 
     // renders the buttons:
     renderButtons: function (buttons) {
-      var button, index;
-
       this.buffer.fillStyle = "#202830";
       this.buffer.fillRect(
         0,
@@ -197,11 +196,14 @@
         this.buffer.canvas.height
       );
 
-      for (index = buttons.length - 1; index > -1; --index) {
-        button = buttons[index];
+      // for (index = buttons.length - 1; index > -1; --index) {
+      for (let button in buttons) {
+        if (buttons.hasOwnProperty(button)) {
+          button = buttons[button];
 
-        this.buffer.fillStyle = button.color;
-        this.buffer.fillRect(button.x, button.y, button.width, button.height);
+          this.buffer.fillStyle = button.color;
+          this.buffer.fillRect(button.x, button.y, button.width, button.height);
+        }
       }
     },
 
@@ -240,21 +242,21 @@
   // handles game logic:
   game = {
     loop: function (time_stamp) {
-      if (controller.buttons[0].active) {
+      if (controller.buttons.left.active) {
         game.square.velocity_x -= 0.5;
       }
 
-      if (controller.buttons[1].active && game.square.jumping == false) {
+      if (controller.buttons.forward.active && game.square.jumping == false) {
         game.square.velocity_y = -20;
         game.square.jumping = true;
       }
 
-      if (controller.buttons[2].active && game.square.jumping == false) {
+      if (controller.buttons.backward.active && game.square.jumping == false) {
         game.square.velocity_y = -20;
         game.square.jumping = true;
       }
 
-      if (controller.buttons[3].active) {
+      if (controller.buttons.right.active) {
         game.square.velocity_x += 0.5;
       }
 

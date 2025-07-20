@@ -37,7 +37,7 @@
       document.getElementById(key).innerHTML = myObj[key];
     }
   }
-  var Button, controller, display, game;
+  var Button, Stick, controller, display, game;
 
   // basically a rectangle, but it's purpose here is to be a button:
   Button = function (x, y, width, height, color, name) {
@@ -48,6 +48,8 @@
     this.x = x;
     this.y = y;
     this.name = name;
+    this.horizontal = 0.0;
+    this.vertical = 0.0;
   };
 
   Button.prototype = {
@@ -60,20 +62,24 @@
         y < this.y ||
         y > this.y + this.width
       ) {
+        this.horizontal = 0.0;
+        this.vertical = 0.0;
         return false;
       }
 
+      // if the point is inside the rectangle, calculate the horizontal and vertical values:
+      this.horizontal = 2*(x - this.x) / this.width - 1.0;
+      this.vertical = -2*(y - this.y) / this.height + 1.0;
+      
       return true;
     },
   };
 
+
   // handles everything to do with user input:
   controller = {
     buttons: {
-      left: new Button(0, 130, 100, 100, "#ff0000", "left"),
-      forward: new Button(130, 0, 100, 100, "#0000ff", "forward"),
-      backward: new Button(130, 260, 100, 100, "#00ff00", "backward"),
-      right: new Button(260, 130, 100, 100, "#ff00ff", "right"),
+      joystick: new Button(50, 50, 300, 300, "#007700", "joystick"),
     },
 
     testButtons: function (target_touches) {
@@ -107,31 +113,21 @@
 
       websocket.send(
         JSON.stringify({
-          left: this.buttons.left.active,
-          right: this.buttons.right.active,
-          forward: this.buttons.forward.active,
-          backward: this.buttons.backward.active,
-          timestamp: Date.now()
+          horizontal: this.buttons.joystick.horizontal ? this.buttons.joystick.horizontal : 0,
+          vertical: this.buttons.joystick.active ? this.buttons.joystick.vertical : 0,
+          timestamp: Date.now(),
         })
       );
 
       display.message.innerHTML =
-        "touches: " + event.targetTouches.length + "<br>- ";
+        "touches: " + event.targetTouches.length + "<br> ";
 
-      if (this.buttons.left.active) {
-        display.message.innerHTML += this.buttons.left.name;
-      }
-      if (this.buttons.right.active) {
-        display.message.innerHTML += this.buttons.right.name;
-      }
-      if (this.buttons.forward.active) {
-        display.message.innerHTML += this.buttons.forward.name;
-      }
-      if (this.buttons.backward.active) {
-        display.message.innerHTML += this.buttons.backward.name;
-      }
-
-      display.message.innerHTML += " -";
+      // if (this.buttons.joystick.active) {
+        display.message.innerHTML +="H:"
+        display.message.innerHTML += this.buttons.joystick.horizontal.toFixed(2);
+        display.message.innerHTML += " V:";
+        display.message.innerHTML += this.buttons.joystick.vertical.toFixed(2);
+    //  }
     },
 
     touchEnd: function (event) {
@@ -246,52 +242,16 @@
   // handles game logic:
   game = {
     loop: function (time_stamp) {
-      if (controller.buttons.left.active) {
-        game.square.velocity_x -= 0.5;
-      }
-
-      if (controller.buttons.forward.active && game.square.jumping == false) {
-        game.square.velocity_y = -20;
-        game.square.jumping = true;
-      }
-
-      if (controller.buttons.backward.active && game.square.jumping == false) {
-        game.square.velocity_y = -20;
-        game.square.jumping = true;
-      }
-
-      if (controller.buttons.right.active) {
-        game.square.velocity_x += 0.5;
-      }
-
-      // simulate gravity:
-      game.square.velocity_y += 1.5;
-
-      // simulate friction:
-      game.square.velocity_x *= 0.9;
-      game.square.velocity_y *= 0.9;
-
-      // move the square:
-      game.square.x += game.square.velocity_x;
-      game.square.y += game.square.velocity_y;
-
-      // collision detection for the square and the boundaries of the graphics buffer:
-      if (game.square.x + game.square.width < 0) {
-        game.square.x = display.buffer.canvas.width;
-      } else if (game.square.x > display.buffer.canvas.width) {
-        game.square.x = 0;
-      }
-
-      if (game.square.y + game.square.height > 150) {
-        game.square.y = 150 - game.square.height;
-        game.square.jumping = false;
+      if (controller.buttons.joystick.active) {
+        
       }
 
       display.clear("#303840");
 
-      display.renderSquare(game.square);
 
       display.renderButtons(controller.buttons);
+      
+      display.renderSquare(game.square);
 
       display.render();
 

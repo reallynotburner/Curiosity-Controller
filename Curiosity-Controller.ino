@@ -18,7 +18,7 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include "LittleFS.h"
-#include <Arduino_JSON.h>
+#include <ArduinoJson.h>
 #include <ESPmDNS.h>
 
 // Replace with your network credentials
@@ -45,7 +45,7 @@ void initMotor() {
   pinMode(STBY, OUTPUT);
 
   digitalWrite(STBY, HIGH);
-  digitalWrite(AN1, HIGH);
+  digitalWrite(AN1, LOW);
   digitalWrite(AN2, LOW);
 }
 
@@ -56,7 +56,7 @@ AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
 // Json Variable to Hold Sensor Readings
-JSONVar readings;
+JsonDocument readings;
 
 // Timer variables
 unsigned long lastTime = 0;
@@ -65,11 +65,12 @@ unsigned long timerDelay = 10000;
 
 // Get Sensor Readings and return JSON object
 String getSensorReadings() {
-  readings["temperature"] = String("hot!");
-  readings["humidity"] = String("moist!");
-  readings["pressure"] = String("vacuous!");
-  String jsonString = JSON.stringify(readings);
-  return jsonString;
+  readings["temperature"] = "Hot!";
+  readings["humidity"] = "Moist!";
+  readings["pressure"] = "Vacuous!";
+  char serializedReadings[256];
+  serializeJson(readings, serializedReadings);
+  return serializedReadings;
 }
 
 // Initialize LittleFS
@@ -86,35 +87,30 @@ void notifyClients(String sensorReadings) {
 }
 
 void updateMotors(String message) {
-  JSONVar messageObject = JSON.parse(message);
-  if (JSON.typeof(messageObject) == "undefined") {
-    Serial.println("Parsing input failed!");
-    return;
-  }
+  JsonDocument messageObject;
+  deserializeJson(messageObject, message);
 
-  if (messageObject.hasOwnProperty("forward") && messageObject.hasOwnProperty("backward")) {
-    if (messageObject["forward"] && messageObject["backward"]) {
-      Serial.println("Motor control Stalemate, no action");
-      digitalWrite(AN1, LOW);
-      digitalWrite(AN2, LOW);
-      ledcWrite(PWM01, 0);
-      return;
-    } else if (messageObject["forward"]) {
-      Serial.println("Motor control forward");
-      digitalWrite(AN1, HIGH);
-      digitalWrite(AN2, LOW);
-      ledcWrite(PWM01, 128);
-    } else if (messageObject["backward"]) {
-      Serial.println("Motor control backward");
-      digitalWrite(AN1, LOW);
-      digitalWrite(AN2, HIGH);
-      ledcWrite(PWM01, 128);
-    } else {
-      Serial.println("Motor control stopping");
-      digitalWrite(AN1, LOW);
-      digitalWrite(AN2, LOW);
-      ledcWrite(PWM01, 0);
-    }
+  float horizontal = messageObject["horizontal"];
+  float vertical = messageObject["vertical"];
+
+  float mappedVertical = 0;
+
+
+  if (vertical > 0.0) {
+    mappedVertical = vertical*255.0;
+    digitalWrite(AN1, HIGH);
+    digitalWrite(AN2, LOW);
+    ledcWrite(PWM01, (int) mappedVertical);
+  } else if (vertical < 0.0) {
+    mappedVertical = -vertical*255.0;
+    digitalWrite(AN1, LOW);
+    digitalWrite(AN2, HIGH);
+    ledcWrite(PWM01, (int) mappedVertical);
+  } else {
+    Serial.println("Zero Motors!");
+    digitalWrite(AN1, LOW);
+    digitalWrite(AN2, LOW);
+    ledcWrite(PWM01, 0);
   }
 }
 
@@ -173,7 +169,7 @@ void setup() {
 
   if (!MDNS.begin("controller")) {
     Serial.println("Error setting up mDNS");
-    while(1) {
+    while (1) {
       delay(1000);
     }
   }

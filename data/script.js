@@ -122,12 +122,12 @@
       display.message.innerHTML =
         "touches: " + event.targetTouches.length + "<br> ";
 
-      // if (this.buttons.joystick.active) {
+      if (this.buttons.joystick.active) {
         display.message.innerHTML +="H:"
         display.message.innerHTML += this.buttons.joystick.horizontal.toFixed(2);
         display.message.innerHTML += " V:";
         display.message.innerHTML += this.buttons.joystick.vertical.toFixed(2);
-    //  }
+     }
     },
 
     touchEnd: function (event) {

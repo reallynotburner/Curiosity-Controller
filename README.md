@@ -7,6 +7,8 @@ I want to drive around a highly functional model of the Mars Science Laboratory 
 ## Hardware
 ### Controller
 [ESP32 Devkit](https://www.microcenter.com/product/613822/inland-esp32-wroom-32d-module) as a central controller has many input-output pins, nearly all of which can do motor controlling functions like PWM.  This is vital when it needs 10 independent motors just to drive around.  The ESP32 also has WiFi and Bluetooth built in, providing an inexpensive method of remote control.
+### Interface
+Uses standard web page interface, served via access point protocol. Open your phone, tablet or desktop computer and log into "curiosity".  The password is "callyourmom".  Then open a browser to "controller.local" and the control UI will show up, allowing you to control the rover.
 
 ### Motors
 [Sanyo-style micro gearmotors](https://www.amazon.com/gp/aw/d/B07FVMVGM3/?_encoding=UTF8) provide the traction and steering functions of the model.  They may even provide animation of the [Mast Camera](https://science.nasa.gov/mission/msl-curiosity/science-instruments/#h-mastcam) and Robotic Arm, but that is a project more complex than just driving the model around.

@@ -19,6 +19,7 @@
 #include <ESPAsyncWebServer.h>
 #include "LittleFS.h"
 #include <Arduino_JSON.h>
+#include <ESPmDNS.h>
 
 // Replace with your network credentials
 const char *ssid = "curiosity";
@@ -124,14 +125,8 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
     String rawData = (char *)data;
     String message = rawData.substring(0, len);
     Serial.println(message);
-
-
-
     updateMotors(message);
-
     String sensorReadings = getSensorReadings();
-    // Serial.println(sensorReadings);
-    // How to send data out to all web clients
     notifyClients(sensorReadings);
   }
 }
@@ -175,6 +170,14 @@ void setup() {
 
   // Start server
   server.begin();
+
+  if (!MDNS.begin("controller")) {
+    Serial.println("Error setting up mDNS");
+    while(1) {
+      delay(1000);
+    }
+  }
+  Serial.println("mDNS responder started");
 
   // Setup Motors
   initMotor();

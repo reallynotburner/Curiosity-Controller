@@ -1,4 +1,6 @@
-# Curiosity-Controller
+# Curiosity-Rover
+
+![image info](./Curiosity_Selfie.png)
 
 ## Goal
 ###

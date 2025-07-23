@@ -20,6 +20,7 @@
 #include "LittleFS.h"
 #include <ArduinoJson.h>
 #include <ESPmDNS.h>
+#include <ESP32Servo.h>
 
 // Replace with your network credentials
 const char *ssid = "curiosity";
@@ -34,6 +35,10 @@ const int STBY = 27;
 // setting motor PWM properties
 const int freq = 5000;
 const int resolution = 8;
+
+// steering pins
+const int STEER01 = 19;
+Servo steer01;
 
 void initMotor() {
   // configure motor PWM
@@ -95,7 +100,7 @@ void updateMotors(String message) {
 
   float mappedVertical = 0;
 
-
+  // find direction and speed of motors
   if (vertical > 0.0) {
     mappedVertical = vertical*255.0;
     digitalWrite(AN1, HIGH);
@@ -117,6 +122,14 @@ void updateMotors(String message) {
     analogWrite(PWM01, 0);
     Serial.println("nowhere at: 0");
   }
+
+  // find steering values
+  // steer01.writeMicroseconds(1500); // middle
+  // steer01.writeMicroseconds(1000); // beginning
+  // steer01.writeMicroseconds(2000); // end
+  steer01.writeMicroseconds((int)(500.0 * horizontal) + 1500);
+  Serial.print("steer01 uS: ");
+  Serial.println((int)(500.0 * horizontal) + 1500);
 }
 
 void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
@@ -182,6 +195,7 @@ void setup() {
 
   // Setup Motors
   initMotor();
+  steer01.attach(STEER01);
 }
 
 void loop() {

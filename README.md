@@ -1,10 +1,17 @@
 # Curiosity-Rover
 
-![image info](./Curiosity_Selfie.png)
+<p style="text-align: center;">
+    <img src="./Curiosity_Selfie.png" />
+</p>
 
 ## Goal
 ###
 I want to drive around a highly functional model of the Mars Science Laboratory (MSL), named [Curiosity](https://www.jpl.nasa.gov/missions/mars-science-laboratory-curiosity-rover-msl/).  It will have working rocker-bogie suspension, and 4 steerable motors so it can spin in place without skid steering like a tank.  I'm making it as small as I can using [Sanyo-style micro gearmotors](https://www.amazon.com/gp/aw/d/B07FVMVGM3/?_encoding=UTF8), which are inexpensive, strong, and fairly small.  The motors have to fit inside the wheel hubs and the steering mechanism without altering the proportions of the model too much for my taste.  Therefore the smallest I can make it is 1/6 scale, I could go smaller but it would mean more expensive smaller motors.
+
+## Wiring
+###
+Using [Fritzing](https://fritzing.org/), a companion project of the [Arduino](https://www.arduino.cc/) movement, to document the physical orientation of all the wires that I'm putting in this thing.  You can draw wires, place components in solderless breadboards, all visually and intuitively while you make real connects on your project.  It then updates actual schematics and node trees that can be used to order real PCB's to buid the project more permanently.
+
 
 ## Hardware
 ### Controller

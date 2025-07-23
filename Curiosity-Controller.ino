@@ -37,7 +37,7 @@ const int resolution = 8;
 
 void initMotor() {
   // configure motor PWM
-  ledcAttach(PWM01, freq, resolution);
+  pinMode(PWM01, OUTPUT);
 
   // set the control pins as outputs
   pinMode(AN1, OUTPUT);
@@ -100,17 +100,22 @@ void updateMotors(String message) {
     mappedVertical = vertical*255.0;
     digitalWrite(AN1, HIGH);
     digitalWrite(AN2, LOW);
-    ledcWrite(PWM01, (int) mappedVertical);
+    analogWrite(PWM01, (unsigned int) mappedVertical);
+    Serial.print("forward at: ");
+    Serial.println((unsigned int) mappedVertical);
   } else if (vertical < 0.0) {
     mappedVertical = -vertical*255.0;
     digitalWrite(AN1, LOW);
     digitalWrite(AN2, HIGH);
-    ledcWrite(PWM01, (int) mappedVertical);
+    analogWrite(PWM01, (unsigned int) mappedVertical);
+    Serial.print("backward at: ");
+    Serial.println((unsigned int) mappedVertical);
   } else {
     Serial.println("Zero Motors!");
     digitalWrite(AN1, LOW);
     digitalWrite(AN2, LOW);
-    ledcWrite(PWM01, 0);
+    analogWrite(PWM01, 0);
+    Serial.println("nowhere at: 0");
   }
 }
 

@@ -72,7 +72,7 @@
 
   function onClose(event) {
     console.log("Connection closed");
-    websocketOpen = true;
+    websocketOpen = false;
     setTimeout(initWebSocket, 2000);
   }
 

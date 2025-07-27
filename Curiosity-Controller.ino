@@ -40,9 +40,9 @@ const int resolution = 8;
 // Store preferences, like steering calibration
 Preferences preferences;
 // uS +/- of center to add to the incoming controls
-short steerCal01 = 0;
-short currentSteerCal01 = 777;
-char *steerKey = "steer";
+short steerCal01 = 0; // calibration from preferences
+short currentSteerCal01 = 0;  // calibration in RAM during currnet calibration session
+char *steerKey = "steer01"; // the name of the calibration value for storage and retrieval
 
 // steering pins
 const int STEER01 = 19;
@@ -178,14 +178,17 @@ void initWebSocket() {
 void storeValue (short value, char *key) {
   preferences.begin("preferences", false);
   short currentVal = preferences.getShort(key, 0);
-  Serial.print("currentVal: ");
+
+  Serial.print(key);
+  Serial.print(" current value: ");
   Serial.println(currentVal);
-  
+
   preferences.putShort(key, value);
   currentVal = preferences.getShort(key, 0);
   preferences.end();
 
-  Serial.print("updated currentVal is: ");
+  Serial.print(key);
+  Serial.print(" updated value is: ");
   Serial.println(currentVal);
 }
 

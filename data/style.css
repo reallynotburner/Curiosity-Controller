@@ -1,31 +1,76 @@
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
 }
 
 body {
-  font:14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background-color:#222;
+  background-color: #222;
   position: relative;
   min-height: 100vh;
   min-width: 100vw;
 }
 
+.flex-container {
+  display: flex;
+  justify-content: flex-end;
+  height: 100%;
+  width: 100%;
+}
+
+#joystick-container {
+  display: flex;
+  justify-content: space-around;
+}
+
 #zone_joystick {
-    position: absolute;
-    background: #555;
-    box-sizing: content-box;
-    height: 300px;
-    width: 300px;
-    overflow: hidden;
-    right: 20px;
-    bottom: 20px;
+  position: relative;
+  background: #555;
+  box-sizing: content-box;
+  height: 300px;
+  width: 300px;
+  overflow: hidden;
+  border-radius: 10px;
+  margin: auto;
+}
+
+#button-row {
+  display: flex;
+  justify-content: space-around;
+}
+
+.button {
+  width: 50px;
+  height: 35px;
+  margin: 10px;
+  background-color: aqua;
+  border-radius: 10px;
+  text-align: center;
+  line-height: 35px;
+}
+
+@media (orientation: portrait) {
+  .flex-container {
+    flex-direction: column;
+  }
+  #button-row {
+    flex-direction: row;
+  }
+  #joystick-container {
+    height: 360px;
+  }
 }
 
 @media (orientation: landscape) {
-  #zone_joystick {
-    right: 20px;
-    bottom: 20px;
+  .flex-container {
+    flex-direction: row;
+  }
+  #button-row {
+    flex-direction: column;
+  }
+  #joystick-container {
+    width: 360px;
   }
 }

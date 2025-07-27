@@ -21,6 +21,7 @@
 #include <ArduinoJson.h>
 #include <ESPmDNS.h>
 #include <ESP32Servo.h>
+#include <Preferences.h>
 
 // Replace with your network credentials
 const char *ssid = "curiosity";
@@ -35,6 +36,13 @@ const int STBY = 27;
 // setting motor PWM properties
 const int freq = 5000;
 const int resolution = 8;
+
+// Store preferences, like steering calibration
+Preferences preferences;
+// uS +/- of center to add to the incoming controls
+short steerCal01 = 0;
+short currentSteerCal01 = 777;
+char *steerKey = "steer";
 
 // steering pins
 const int STEER01 = 19;
@@ -167,6 +175,20 @@ void initWebSocket() {
   server.addHandler(&ws);
 }
 
+void storeValue (short value, char *key) {
+  preferences.begin("preferences", false);
+  short currentVal = preferences.getShort(key, 0);
+  Serial.print("currentVal: ");
+  Serial.println(currentVal);
+  
+  preferences.putShort(key, value);
+  currentVal = preferences.getShort(key, 0);
+  preferences.end();
+
+  Serial.print("updated currentVal is: ");
+  Serial.println(currentVal);
+}
+
 void setup() {
   Serial.begin(115200);
 
@@ -195,7 +217,11 @@ void setup() {
 
   // Setup Motors
   initMotor();
+  
   steer01.attach(STEER01);
+
+  delay(5000);
+  storeValue(799, steerKey);
 }
 
 void loop() {

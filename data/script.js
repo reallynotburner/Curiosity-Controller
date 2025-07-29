@@ -7,7 +7,6 @@
   Yoann Moinet's joystick library (NippleJS):
   https://github.com/yoannmoinet/nipplejs
  */
-
 (function () {
   var gateway = `ws://${window.location.hostname}/ws`;
   var websocket;
@@ -16,27 +15,29 @@
     vertical: 0,
     horizontal: 0,
   };
+  var calibrating = false;
+  // I've numbered the wheels starting with '1' so there are 7 elements in this array
+  var calibrationStatus = [false, false, false, false, false, false, false];
 
   // Init web socket when the page loads
-
   function initWebSocket() {
     try {
       websocket = new WebSocket(gateway);
       websocket.onopen = onOpen;
       websocket.onclose = onClose;
       websocket.onmessage = onMessage;
-
-      manager
+      websocketOpen && manager
         .on("added", function (evt, nipple) {
           nipple.on("start move", function (evt) {
             currentPosition.horizontal = nipple.frontPosition.x / 150.0;
             currentPosition.vertical = nipple.frontPosition.y / 150.0;
-
             websocketOpen &&
               websocket.send(
                 JSON.stringify({
                   horizontal: currentPosition.horizontal,
                   vertical: currentPosition.vertical,
+                  calibrating,
+                  calibrationStatus,
                   timestamp: Date.now(),
                 })
               );
@@ -52,6 +53,8 @@
               JSON.stringify({
                 horizontal: 0,
                 vertical: 0,
+                calibrating,
+                calibrationStatus,
                 timestamp: Date.now(),
               })
             );
@@ -62,7 +65,46 @@
     } catch (e) {}
   }
 
+  function setCalButtonStatus (state) {
+    let calibrationButton = document.getElementById("calbtn");
+    if (state) {
+      calibrationButton.classList.add('active');
+    } else {
+      calibrationButton.classList.remove('active');
+    }
+  }
+
   window.addEventListener("load", initWebSocket);
+  window.onhashchange = (evt) => {
+    calibrationStatus.fill(false); // reset the state
+    calibrating = true;
+    switch (window.location.hash) {
+      case "#leftfrontcalibrate":
+        calibrationStatus[1] = true;
+        setCalButtonStatus(true);
+        break;
+      case "#rightfrontcalibrate":
+        calibrationStatus[2] = true;
+        setCalButtonStatus(true);
+        break;
+      case "#leftrearcalibrate":
+        calibrationStatus[5] = true;
+        setCalButtonStatus(true);
+        break;
+      case "#rightrearcalibrate":
+        calibrationStatus[6] = true;
+        setCalButtonStatus(true);
+        break;
+      case "#move":
+        calibrating = false;
+        setCalButtonStatus(false);
+        break;
+      default:
+        calibrating = false;
+        setCalButtonStatus(false);
+        break;
+    }
+  }
 
   // When websocket is established, call the getReadings() function
   function onOpen() {

@@ -24,7 +24,7 @@ body {
 .flex-container {
   display: flex;
   justify-content: flex-end;
-  height: 100%;
+  height: 80%;
   width: 100%;
 }
 
@@ -102,7 +102,7 @@ body {
 
 .dropdown-content a {
   color: black;
-  padding: 12px 16px;
+  padding: 10px 10px;
   text-decoration: none;
   display: block;
 }
@@ -132,9 +132,13 @@ body {
     flex-direction: row;
   }
   #button-row {
-    flex-direction: column;
+    flex-direction: column-reverse;
   }
   #joystick-container {
     width: 360px;
+  }
+  #zone_joystick {
+    height: 230px;
+    width: 230px;
   }
 }

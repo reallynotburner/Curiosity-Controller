@@ -81,7 +81,6 @@
     calibrating = true;
     switch (window.location.hash) {
       case "#leftfrontcalibrate":
-        console.log('CXAALSKDJFASD');
         calibrationStatus[1] = true;
         setCalButtonStatus(true);
         break;

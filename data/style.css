@@ -1,9 +1,17 @@
 html,
 body {
-  height: 100%;
+  height: 100vh;
+  width: 100vw;
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+  font-weight: bold;
+  overflow: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
 body {
@@ -16,7 +24,7 @@ body {
 .flex-container {
   display: flex;
   justify-content: flex-end;
-  height: 100%;
+  height: 80%;
   width: 100%;
 }
 
@@ -41,14 +49,70 @@ body {
   justify-content: space-around;
 }
 
-.button {
-  width: 50px;
+.active {
+  background-color: greenyellow;
+}
+
+.dropbtn {
+  width: 60px;
   height: 35px;
   margin: 10px;
-  background-color: aqua;
+  color: black;
+  background-color: sienna;
+  font-weight: bold;
   border-radius: 10px;
   text-align: center;
   line-height: 35px;
+  border: none;
+}
+
+.dropbtncal {
+  width: 60px;
+  height: 35px;
+  margin: 10px;
+  color: black;
+  background-color: sienna;
+  font-weight: bold;
+  border-radius: 10px;
+  text-align: center;
+  line-height: 35px;
+  border: none;
+}
+
+.dropbtn:hover,
+.dropbtn:focus {
+  background-color: greenyellow;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  overflow: auto;
+  box-shadow: 0px 16px 32px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  margin-left: 0;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 10px 10px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown a:hover {
+  background-color: #ddd;
+}
+
+.show {
+  display: block;
 }
 
 @media (orientation: portrait) {
@@ -68,9 +132,13 @@ body {
     flex-direction: row;
   }
   #button-row {
-    flex-direction: column;
+    flex-direction: column-reverse;
   }
   #joystick-container {
     width: 360px;
+  }
+  #zone_joystick {
+    height: 230px;
+    width: 230px;
   }
 }

@@ -11,36 +11,47 @@
   var gateway = `ws://${window.location.hostname}/ws`;
   var websocket;
   var websocketOpen = false;
-  var currentPosition = {
+  var currentJoystickPosition = {
     vertical: 0,
     horizontal: 0,
   };
 
   var calibrating = false;
   // I've numbered the wheels starting with '1' so there are 7 elements in this array
-  var calibrationStatus = [false, false, false, false, false, false, false];
+  var calibrationAxis = [false, false, false, false, false, false, false];
+  var calibrationPoint = "middle"; // "start || middle || end"
 
   // Init web socket when the page loads
   function initWebSocket() {
+    websocket = new WebSocket(gateway);
+    websocket.onopen = onOpen;
+    websocket.onclose = onClose;
+    websocket.onmessage = onMessage;
+  }
+
+  function initJoystick() {
     manager
       .on("added", function (evt, nipple) {
         nipple.on("start move", function (evt) {
-          currentPosition.horizontal = nipple.frontPosition.x / 150.0;
-          currentPosition.vertical = nipple.frontPosition.y / 150.0;
+          calibrating = calibrationAxis.some(axis => axis);
+          currentJoystickPosition.horizontal = nipple.frontPosition.x / 150.0;
+          currentJoystickPosition.vertical = nipple.frontPosition.y / 150.0;
           websocketOpen &&
             websocket.send(
               JSON.stringify({
-                horizontal: currentPosition.horizontal,
-                vertical: currentPosition.vertical,
+                horizontal: currentJoystickPosition.horizontal,
+                vertical: currentJoystickPosition.vertical,
                 calibrating,
-                calibrationStatus,
+                calibrationAxis,
+                calibrationPoint,
                 timestamp: Date.now(),
               })
             );
         });
       })
       .on("end", function () {
-        currentPosition = {
+        calibrating = false;
+        currentJoystickPosition = {
           horizontal: 0,
           vertical: 0,
         };
@@ -50,7 +61,8 @@
               horizontal: 0,
               vertical: 0,
               calibrating,
-              calibrationStatus,
+              calibrationAxis,
+              calibrationPoint,
               timestamp: Date.now(),
             })
           );
@@ -58,12 +70,6 @@
       .on("removed", function (evt, nipple) {
         nipple.off("start move end");
       });
-    try {
-      websocket = new WebSocket(gateway);
-      websocket.onopen = onOpen;
-      websocket.onclose = onClose;
-      websocket.onmessage = onMessage;
-    } catch (e) {}
   }
 
   function setCalButtonStatus(state) {
@@ -75,34 +81,34 @@
     }
   }
 
-  window.addEventListener("load", initWebSocket);
+  window.addEventListener("load", () => {
+    initWebSocket();
+    initJoystick();
+  });
+  
   window.onhashchange = (evt) => {
-    calibrationStatus.fill(false); // reset the state
+    calibrationAxis.fill(false); // reset the state
     calibrating = true;
     switch (window.location.hash) {
       case "#leftfrontcalibrate":
-        calibrationStatus[1] = true;
-        setCalButtonStatus(true);
+        calibrationAxis[1] = true;
         break;
       case "#rightfrontcalibrate":
-        calibrationStatus[2] = true;
-        setCalButtonStatus(true);
+        calibrationAxis[2] = true;
         break;
       case "#leftrearcalibrate":
-        calibrationStatus[5] = true;
-        setCalButtonStatus(true);
+        calibrationAxis[5] = true;
         break;
       case "#rightrearcalibrate":
-        calibrationStatus[6] = true;
-        setCalButtonStatus(true);
+        calibrationAxis[6] = true;
         break;
       case "#move":
+        calibrationAxis.fill(false);
         calibrating = false;
-        setCalButtonStatus(false);
         break;
       default:
+        calibrationAxis.fill(false);
         calibrating = false;
-        setCalButtonStatus(false);
         break;
     }
   };
@@ -119,6 +125,6 @@
 
   // Function that receives the message from the ESP32 with the readings
   function onMessage(event) {
-    console.log('message from ESP32', event.data);
+    console.log("message from ESP32", event.data);
   }
 })();

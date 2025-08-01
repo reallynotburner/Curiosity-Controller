@@ -12,7 +12,7 @@
           <a href="#move">MOVE</a>
         </div>
         <div class="dropdown">
-          <button onclick="myFunction()" id="calbtn" class="dropbtn">CAL.</button>
+          <button onclick="calMenuToggle()" id="calbtn" class="dropbtn">CAL.</button>
           <div id="myDropdown" class="dropdown-content">
             <a href="#leftfrontcalibrate">LEFT FRONT</a>
             <a href="#rightfrontcalibrate">RIGHT FRONT</a>
@@ -38,7 +38,7 @@
     <script src="script.js" type="text/javascript"></script>
     <script>
       /* When the user clicks on the button, toggle between hiding and showing the dropdown content */
-      function myFunction() {
+      function calMenuToggle() {
         document.getElementById("myDropdown").classList.toggle("show");
       }
 

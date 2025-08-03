@@ -17,8 +17,8 @@
   };
 
   var calibrating = false;
-  // I've numbered the wheels starting with '1' so there are 7 elements in this array
-  var calibrationAxis = [false, false, false, false, false, false, false];
+  // I've numbered the axes starting with '1', so zero is no-axis selected
+  var calibrationAxis = 0;
   var calibrationPoint = "middle"; // "start || middle || end"
 
   // Init web socket when the page loads
@@ -31,9 +31,10 @@
 
   function initJoystick() {
     manager
-      .on("added", function (evt, nipple) {
-        nipple.on("start move", function (evt) {
-          calibrating = calibrationAxis.some(axis => axis);
+      .on("added", function (_, nipple) {
+        nipple.on("start move", function () {
+          calibrating = calibrationAxis ? true : false;
+          console.log("start move calibrationAxis: ", calibrationAxis, calibrating);
           currentJoystickPosition.horizontal = nipple.frontPosition.x / 150.0;
           currentJoystickPosition.vertical = nipple.frontPosition.y / 150.0;
           websocketOpen &&
@@ -49,12 +50,42 @@
             );
         });
       })
-      .on("end", function () {
+      .on("end", function (_, nipple) {
         calibrating = false;
+        if (calibrationAxis) {
+          console.log(
+            "ENDED WHILE CALIBRATING!",
+            currentJoystickPosition.horizontal,
+            calibrating
+          );
+        }
+        currentJoystickPosition.horizontal = calibrationAxis ? nipple.frontPosition.x / 150.0 : 0;
+        currentJoystickPosition.vertical = calibrationAxis ? nipple.frontPosition.y / 150.0 : 0;
+        websocketOpen &&
+          websocket.send(
+            JSON.stringify({
+              horizontal: currentJoystickPosition.horizontal,
+              vertical: currentJoystickPosition.vertical,
+              calibrating,
+              calibrationAxis,
+              calibrationPoint,
+              timestamp: Date.now(),
+            })
+          );
+      })
+      .on("removed", function (evt, nipple) {
+        nipple.off("start move end");
+        if (calibrationAxis) {
+          console.log(
+            "REMOVED WHILE CALIBRATING!",
+            currentJoystickPosition.horizontal
+          );
+        }
         currentJoystickPosition = {
           horizontal: 0,
           vertical: 0,
-        };
+        }
+        calibrating = false;
         websocketOpen &&
           websocket.send(
             JSON.stringify({
@@ -66,49 +97,32 @@
               timestamp: Date.now(),
             })
           );
-      })
-      .on("removed", function (evt, nipple) {
-        nipple.off("start move end");
       });
-  }
-
-  function setCalButtonStatus(state) {
-    let calibrationButton = document.getElementById("calbtn");
-    if (state) {
-      calibrationButton.classList.add("active");
-    } else {
-      calibrationButton.classList.remove("active");
-    }
   }
 
   window.addEventListener("load", () => {
     initWebSocket();
     initJoystick();
   });
-  
+
   window.onhashchange = (evt) => {
-    calibrationAxis.fill(false); // reset the state
-    calibrating = true;
+    calibrationAxis = 0; // reset the state
     switch (window.location.hash) {
       case "#leftfrontcalibrate":
-        calibrationAxis[1] = true;
+        calibrationAxis = 1;
         break;
       case "#rightfrontcalibrate":
-        calibrationAxis[2] = true;
+        calibrationAxis = 2;
         break;
       case "#leftrearcalibrate":
-        calibrationAxis[5] = true;
+        calibrationAxis = 5;
         break;
       case "#rightrearcalibrate":
-        calibrationAxis[6] = true;
+        calibrationAxis = 6;
         break;
       case "#move":
-        calibrationAxis.fill(false);
-        calibrating = false;
         break;
       default:
-        calibrationAxis.fill(false);
-        calibrating = false;
         break;
     }
   };

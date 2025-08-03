@@ -7,77 +7,138 @@
   Yoann Moinet's joystick library (NippleJS):
   https://github.com/yoannmoinet/nipplejs
  */
-
 (function () {
   var gateway = `ws://${window.location.hostname}/ws`;
   var websocket;
   var websocketOpen = false;
-  var currentPosition = {
+  var currentJoystickPosition = {
     vertical: 0,
     horizontal: 0,
   };
 
+  var calibrating = false;
+  // I've numbered the axes starting with '1', so zero is no-axis selected
+  var calibrationAxis = 0;
+  var calibrationPoint = "middle"; // "start || middle || end"
+
   // Init web socket when the page loads
-
   function initWebSocket() {
-    try {
-      websocket = new WebSocket(gateway);
-      websocket.onopen = onOpen;
-      websocket.onclose = onClose;
-      websocket.onmessage = onMessage;
+    websocket = new WebSocket(gateway);
+    websocket.onopen = onOpen;
+    websocket.onclose = onClose;
+    websocket.onmessage = onMessage;
+  }
 
-      manager
-        .on("added", function (evt, nipple) {
-          nipple.on("start move", function (evt) {
-            currentPosition.horizontal = nipple.frontPosition.x / 150.0;
-            currentPosition.vertical = nipple.frontPosition.y / 150.0;
-
-            websocketOpen &&
-              websocket.send(
-                JSON.stringify({
-                  horizontal: currentPosition.horizontal,
-                  vertical: currentPosition.vertical,
-                  timestamp: Date.now(),
-                })
-              );
-          });
-        })
-        .on("end", function () {
-          currentPosition = {
-            horizontal: 0,
-            vertical: 0,
-          };
+  function initJoystick() {
+    manager
+      .on("added", function (_, nipple) {
+        nipple.on("start move", function () {
+          calibrating = calibrationAxis ? true : false;
+          console.log("start move calibrationAxis: ", calibrationAxis, calibrating);
+          currentJoystickPosition.horizontal = nipple.frontPosition.x / 150.0;
+          currentJoystickPosition.vertical = nipple.frontPosition.y / 150.0;
           websocketOpen &&
             websocket.send(
               JSON.stringify({
-                horizontal: 0,
-                vertical: 0,
+                horizontal: currentJoystickPosition.horizontal,
+                vertical: currentJoystickPosition.vertical,
+                calibrating,
+                calibrationAxis,
+                calibrationPoint,
                 timestamp: Date.now(),
               })
             );
-        })
-        .on("removed", function (evt, nipple) {
-          nipple.off("start move end");
         });
-    } catch (e) {}
+      })
+      .on("end", function (_, nipple) {
+        calibrating = false;
+        if (calibrationAxis) {
+          console.log(
+            "ENDED WHILE CALIBRATING!",
+            currentJoystickPosition.horizontal,
+            calibrating
+          );
+        }
+        currentJoystickPosition.horizontal = calibrationAxis ? nipple.frontPosition.x / 150.0 : 0;
+        currentJoystickPosition.vertical = calibrationAxis ? nipple.frontPosition.y / 150.0 : 0;
+        websocketOpen &&
+          websocket.send(
+            JSON.stringify({
+              horizontal: currentJoystickPosition.horizontal,
+              vertical: currentJoystickPosition.vertical,
+              calibrating,
+              calibrationAxis,
+              calibrationPoint,
+              timestamp: Date.now(),
+            })
+          );
+      })
+      .on("removed", function (evt, nipple) {
+        nipple.off("start move end");
+        if (calibrationAxis) {
+          console.log(
+            "REMOVED WHILE CALIBRATING!",
+            currentJoystickPosition.horizontal
+          );
+        }
+        currentJoystickPosition = {
+          horizontal: 0,
+          vertical: 0,
+        }
+        calibrating = false;
+        websocketOpen &&
+          websocket.send(
+            JSON.stringify({
+              horizontal: 0,
+              vertical: 0,
+              calibrating,
+              calibrationAxis,
+              calibrationPoint,
+              timestamp: Date.now(),
+            })
+          );
+      });
   }
 
-  window.addEventListener("load", initWebSocket);
+  window.addEventListener("load", () => {
+    initWebSocket();
+    initJoystick();
+  });
+
+  window.onhashchange = (evt) => {
+    calibrationAxis = 0; // reset the state
+    switch (window.location.hash) {
+      case "#leftfrontcalibrate":
+        calibrationAxis = 1;
+        break;
+      case "#rightfrontcalibrate":
+        calibrationAxis = 2;
+        break;
+      case "#leftrearcalibrate":
+        calibrationAxis = 5;
+        break;
+      case "#rightrearcalibrate":
+        calibrationAxis = 6;
+        break;
+      case "#move":
+        break;
+      default:
+        break;
+    }
+  };
 
   // When websocket is established, call the getReadings() function
   function onOpen() {
     websocketOpen = true;
-    console.log("WebSocket Connection opened");
   }
 
   function onClose(event) {
-    console.log("Connection closed");
     websocketOpen = false;
     setTimeout(initWebSocket, 2000);
   }
 
   // Function that receives the message from the ESP32 with the readings
   function onMessage(event) {
-    console.log(event.data);
+    console.log("message from ESP32", event.data);
   }
 })();

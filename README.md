@@ -10,7 +10,7 @@ I want to drive around a highly functional model of the Mars Science Laboratory 
 
 ## Wiring
 ###
-Using [Fritzing](https://fritzing.org/), a companion project of the [Arduino](https://www.arduino.cc/) movement, to document the physical orientation of all the wires that I'm putting in this thing.  You can draw wires, place components in solderless breadboards, all visually and intuitively while you make real connects on your project.  It then updates actual schematics and node trees that can be used to order real PCB's to buid the project more permanently.
+Using [Fritzing](https://fritzing.org/), a companion project of the [Arduino](https://www.arduino.cc/) movement, to document the physical orientation of all the wires that I'm putting in this thing.  You can draw wires, place components in solderless breadboards, all visually and intuitively while you make real connections on your project.  It generates schematics and node trees that can be used to order real PCB's to buid the project more permanently.
 
 
 ## Hardware

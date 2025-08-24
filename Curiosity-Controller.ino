@@ -175,7 +175,10 @@ void updateMotors(String message) {
     // Serial.println("Zero Motors!");
     digitalWrite(AN1, LOW);
     digitalWrite(AN2, LOW);
+    digitalWrite(BN1, LOW);
+    digitalWrite(BN2, LOW);
     analogWrite(PWM01, 0);
+    analogWrite(PWM02, 0);
   }
 
   steer(horizontal);

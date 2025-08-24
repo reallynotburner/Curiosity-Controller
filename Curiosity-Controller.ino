@@ -50,7 +50,7 @@ void notifyClients(String sensorReadings) {
   ws.textAll(sensorReadings);
 }
 
-void storeValue(char *key, short value) {
+void storeValue (char *key, short value) {
   preferences.begin("preferences", false);
   short currentVal = preferences.getShort(key, 0);
 
@@ -67,7 +67,7 @@ void storeValue(char *key, short value) {
   Serial.println(currentVal);
 }
 
-short getStoredValue(char *key) {
+short getStoredValue (char *key) {
   preferences.begin("preferences", false);
   short currentVal = preferences.getShort(key, 0);
 
@@ -78,7 +78,7 @@ short getStoredValue(char *key) {
   return currentVal;
 }
 
-void steer(float horizontal) {
+void steer (float horizontal) {
   // find steering values
   int diff = 0;
   int value01 = 0;
@@ -155,14 +155,14 @@ void updateMotors(String message) {
     mappedVertical = vertical * 255.0;
     digitalWrite(AN1, HIGH);
     digitalWrite(AN2, LOW);
-    analogWrite(PWM01, (unsigned int)mappedVertical);
+    analogWrite(PWM01, (unsigned int) mappedVertical);
     // Serial.print("forward at: ");
     // Serial.println((unsigned int) mappedVertical);
   } else if (vertical < 0.0 && !calibrationAxis) {
     mappedVertical = -vertical * 255.0;
     digitalWrite(AN1, LOW);
     digitalWrite(AN2, HIGH);
-    analogWrite(PWM01, (unsigned int)mappedVertical);
+    analogWrite(PWM01, (unsigned int) mappedVertical);
     // Serial.print("backward at: ");
     // Serial.println((unsigned int) mappedVertical);
   } else {
@@ -226,7 +226,7 @@ void setup() {
   server.serveStatic("/", LittleFS, "/");
   server.begin();
 
-  if (!MDNS.begin("controller")) {  // app is at http://controller.local
+  if (!MDNS.begin("controller")) { // app is at http://controller.local
     Serial.println("Error setting up mDNS");
     while (1) {
       delay(1000);

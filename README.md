@@ -1,7 +1,7 @@
 # Curiosity-Rover
 
 <p style="text-align: center;">
-    <img src="./Curiosity_Selfie.png" />
+    <img src="./Curiosity_Selfie.png" style="width: 50%" />
 </p>
 
 ## Goal
@@ -10,7 +10,11 @@ I want to drive around a highly functional model of the Mars Science Laboratory 
 
 ## Wiring
 ###
-Using [Fritzing](https://fritzing.org/), a companion project of the [Arduino](https://www.arduino.cc/) movement, to document the physical orientation of all the wires that I'm putting in this thing.  You can draw wires, place components in solderless breadboards, all visually and intuitively while you make real connections on your project.  It generates schematics and node trees that can be used to order real PCB's to buid the project more permanently.
+Using [Fritzing](https://fritzing.org/), a companion project of the [Arduino](https://www.arduino.cc/) movement, to document the physical orientation of all the wires that I'm putting in this thing.  You can draw wires, place components in solderless breadboards, all visually and intuitively while you make real connections on your project.  It generates schematics and node trees that can be used to order real PCB's to build the project more permanently.
+
+<p style="text-align: center;">
+    <img src="./Curiosity_Wiring.png" style="width: 33%;" />
+</p>
 
 
 ## Hardware
@@ -23,16 +27,14 @@ Uses standard web page interface, served via access point protocol. Open your ph
 [Sanyo-style micro gearmotors](https://www.amazon.com/gp/aw/d/B07FVMVGM3/?_encoding=UTF8) provide the traction and steering functions of the model.  They may even provide animation of the [Mast Camera](https://science.nasa.gov/mission/msl-curiosity/science-instruments/#h-mastcam) and Robotic Arm, but that is a project more complex than just driving the model around.
 
 ### Motor Driver
-[DRV8833 H-Bridges](https://www.amazon.com/VKLSVAN-DRV8833-h-Bridge-Arduino-Microcontroller/dp/B0DQGQ1V1C) provide control of 2 motors per module, so there will be 5 of these on the model for driving and steering,
-
-### Hex Inverters
-[Texas Instruments low-voltage 6 channel inverters](https://www.mouser.com/ProductDetail/Texas-Instruments/SN74LVC04APWRG3?qs=EuM%2FBx4ov4R3TYLIBa%252BMkA%3D%3D) are used to reduce the number of ESP32 pins I need to control my motor drivers.
+[DRV8833 H-Bridges](https://www.amazon.com/VKLSVAN-DRV8833-h-Bridge-Arduino-Microcontroller/dp/B0DQGQ1V1C) provide control of 2 motors per module, so there will be 3 of these on the model for driving.
 
 ### 10k Potentiometers
-[Potentiometers](https://www.amazon.com/Taiss-Potentiometer-Variable-Resistors-Terminals/dp/B09XDR799P) are often used as volume controls.  I'm using them as a position sensor for the steerable wheels.  They convert an angle of the steering bracket into a voltage, which can be read by the ESP32, which then controls the steering motor that can move the bracket to the desired position.
+[Potentiometers](https://www.amazon.com/Taiss-Potentiometer-Variable-Resistors-Terminals/dp/B09XDR799P) are often used as volume controls.  I'm using them as a position sensor for the steerable wheels.  They convert an angle of the steering bracket into a voltage, which can be a feedback signal for standard hobby servo motor PCB's.
 
 ### Code Acknowledgements
 - [Arduino platform](https://www.arduino.cc/) for their wonderful hardware & programming environment, start here if you want to build anything but don't know how to do any of it.
+- [Fritzing GmbH](https://fritzing.org/) for their wiring schematic and PCB generation platform.
 - [ESPRESSIF](https://www.espressif.com/en/producttype/esp32-wroom-32) a Chinese organization known for their superb wireless hardware, with software examples that are easily used in Arduino or standalone.
 - [ARM Limited, et al.](https://github.com/littlefs-project/littlefs) simplifies putting the resources for the web app on the ESP32.
 - [me-no-dev and Lacamera](https://github.com/lacamera/ESPAsyncWebServer) for their ESP WebServer, making it a trivial task to have a web browser serve your web application.

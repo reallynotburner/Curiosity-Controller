@@ -156,6 +156,9 @@ void updateMotors(String message) {
     digitalWrite(AN1, HIGH);
     digitalWrite(AN2, LOW);
     analogWrite(PWM01, (unsigned int) mappedVertical);
+    digitalWrite(BN1, HIGH);
+    digitalWrite(BN2, LOW);
+    analogWrite(PWM02, (unsigned int) mappedVertical);
     // Serial.print("forward at: ");
     // Serial.println((unsigned int) mappedVertical);
   } else if (vertical < 0.0 && !calibrationAxis) {
@@ -163,6 +166,9 @@ void updateMotors(String message) {
     digitalWrite(AN1, LOW);
     digitalWrite(AN2, HIGH);
     analogWrite(PWM01, (unsigned int) mappedVertical);
+    digitalWrite(BN1, LOW);
+    digitalWrite(BN2, HIGH);
+    analogWrite(PWM02, (unsigned int) mappedVertical);
     // Serial.print("backward at: ");
     // Serial.println((unsigned int) mappedVertical);
   } else {

@@ -8,10 +8,13 @@ const char *ssid = "curiosity";
 const char *password = "callyourmom";
 
 // Motor Driver pins
-const int PWM01 = 26;  // 16 corresponds to GPIO 16
+const int PWM01 = 26;
 const int AN1 = 33;
 const int AN2 = 25;
 const int STBY = 27;
+const int PWM02 = 16;
+const int BN1 = 4;
+const int BN2 = 2;
 
 // setting motor PWM properties
 const int freq = 5000;

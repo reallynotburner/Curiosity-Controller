@@ -19,7 +19,13 @@ const int resolution = 8;
 
 // steering pins
 const int STEER01 = 19;
+const int STEER02 = 17;
+const int STEER05 = 18;
+const int STEER06 = 5;
 Servo steer01;
+Servo steer02;
+Servo steer05;
+Servo steer06;
 
 
 // Timer variables

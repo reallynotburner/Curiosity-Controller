@@ -37,9 +37,14 @@ bool calibrating = false;
 unsigned short calibrationAxis = 0;
 
 // uS +/- of center to add to the incoming controls
-short steerCal01 = 0; // calibration from preferences
-short currentSteerCal01 = 0;  // calibration in RAM during currnet calibration session
-char *steerKey01 = "steer01"; // the name of the calibration value for storage and retrieval
+short steerCal01 = 0;          // calibration from preferences
+short steerCal02 = 0;
+short steerCal05 = 0;
+short steerCal06 = 0;
+char *steerKey01 = "steer01";  // the name of the calibration value for storage and retrieval
+char *steerKey02 = "steer02";
+char *steerKey05 = "steer05";
+char *steerKey06 = "steer06";
 
 void notifyClients(String sensorReadings) {
   ws.textAll(sensorReadings);
@@ -77,29 +82,59 @@ void steer (float horizontal) {
   // find steering values
   int diff = 0;
   int value01 = 0;
-  if (!calibrationAxis) { // regular steering, control all motors
+  int value02 = 0;
+  int value05 = 0;
+  int value06 = 0;
+  if (!calibrationAxis) {  // regular steering, control all motors
     diff = (int)(500.0 * horizontal);
-    value01 = diff + steerCal01 + 1500 ;
+    value01 = diff + steerCal01 + 1500;
+    value02 = steerCal02 - diff + 1500;
+    value05 = steerCal05 - diff + 1500;
+    value06 = diff + steerCal06 + 1500;
     steer01.writeMicroseconds(value01);
+    steer02.writeMicroseconds(value02);
+    steer05.writeMicroseconds(value05);
+    steer06.writeMicroseconds(value06);
     // TODO: add the other steering motors
-  } else { // calibration mode, only do one motor at a time
+  } else {  // calibration mode, only do one motor at a time
     diff = (int)(50.0 * horizontal);
     switch (calibrationAxis) {
-      case 0: // no axes are being calibrated
-      break;
-      case 1: // calibrate steering servo 1
-        value01 = diff + steerCal01 + 1500 ;
+      case 0:  // no axes are being calibrated
+        break;
+      case 1:  // calibrate steering servo 1
+        value01 = diff + steerCal01 + 1500;
         steer01.writeMicroseconds(value01);
-        if (!calibrating) { // hopefully only happens infrequently
+        if (!calibrating) {  // hopefully only happens infrequently
           steerCal01 = steerCal01 + diff;
           storeValue(steerKey01, steerCal01);
         }
-      break;
-      case 2: // calibrate steering servo 2
-      case 5: // calibrate steering servo 5
-      case 6: // calibrate steering servo 6
+        break;
+      case 2:  // calibrate steering servo 2
+        value02 = diff + steerCal02 + 1500;
+        steer02.writeMicroseconds(value02);
+        if (!calibrating) {  // hopefully only happens infrequently
+          steerCal02 = steerCal02 + diff;
+          storeValue(steerKey02, steerCal02);
+        }
+        break;
+      case 5:  // calibrate steering servo 5
+        value05 = diff + steerCal05 + 1500;
+        steer05.writeMicroseconds(value05);
+        if (!calibrating) {  // hopefully only happens infrequently
+          steerCal05 = steerCal05 + diff;
+          storeValue(steerKey05, steerCal05);
+        }
+        break;
+      case 6:  // calibrate steering servo 6
+        value06 = diff + steerCal06 + 1500;
+        steer06.writeMicroseconds(value06);
+        if (!calibrating) {  // hopefully only happens infrequently
+          steerCal06 = steerCal06 + diff;
+          storeValue(steerKey06, steerCal06);
+        }
+        break;
       default:
-      break;
+        break;
     }
   }
 }
@@ -117,14 +152,14 @@ void updateMotors(String message) {
 
   // find direction and speed of motors
   if (vertical > 0.0 && !calibrationAxis) {
-    mappedVertical = vertical*255.0;
+    mappedVertical = vertical * 255.0;
     digitalWrite(AN1, HIGH);
     digitalWrite(AN2, LOW);
     analogWrite(PWM01, (unsigned int) mappedVertical);
     // Serial.print("forward at: ");
     // Serial.println((unsigned int) mappedVertical);
   } else if (vertical < 0.0 && !calibrationAxis) {
-    mappedVertical = -vertical*255.0;
+    mappedVertical = -vertical * 255.0;
     digitalWrite(AN1, LOW);
     digitalWrite(AN2, HIGH);
     analogWrite(PWM01, (unsigned int) mappedVertical);
@@ -201,7 +236,13 @@ void setup() {
 
   initMotor();
   steerCal01 = getStoredValue(steerKey01);
+  steerCal02 = getStoredValue(steerKey02);
+  steerCal05 = getStoredValue(steerKey05);
+  steerCal06 = getStoredValue(steerKey06);
   steer01.attach(STEER01);
+  steer01.attach(STEER02);
+  steer05.attach(STEER05);
+  steer06.attach(STEER06);
 }
 
 void loop() {

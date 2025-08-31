@@ -38,15 +38,20 @@ unsigned long timerDelay = 10000;
 void initMotor() {
   // configure motor PWM
   pinMode(PWM01, OUTPUT);
+  pinMode(PWM02, OUTPUT);
 
   // set the control pins as outputs
   pinMode(AN1, OUTPUT);
   pinMode(AN2, OUTPUT);
+  pinMode(BN1, OUTPUT);
+  pinMode(BN2, OUTPUT);
   pinMode(STBY, OUTPUT);
 
   digitalWrite(STBY, HIGH);
   digitalWrite(AN1, LOW);
   digitalWrite(AN2, LOW);
+  digitalWrite(BN1, LOW);
+  digitalWrite(BN2, LOW);
 }
 
 // Get Sensor Readings and return JSON object

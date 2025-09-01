@@ -34,7 +34,7 @@ AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
 bool calibrating = false;
-bool spin = false;
+bool isSpinning = false;
 unsigned short calibrationAxis = 0;
 
 // uS +/- of center to add to the incoming controls
@@ -151,47 +151,15 @@ void updateMotors(String message) {
   float vertical = messageObject["vertical"];
   calibrationAxis = messageObject["calibrationAxis"];
   calibrating = messageObject["calibrating"];
-  spin = messageObject["spin"];
-  // find direction and speed of motors
-  if (spin) {
-    mappedHorizontal = horizontal * 255.0;
-    if (horizontal > 0) {
-      digitalWrite(AN1, HIGH);
-      digitalWrite(AN2, LOW);
-      analogWrite(PWM01, (unsigned int) mappedVertical);
-      digitalWrite(BN1, LOW);
-      digitalWrite(BN2, HIGH);
-      analogWrite(PWM02, (unsigned int) mappedVertical);
-    } else {
-      digitalWrite(AN1, LOW);
-      digitalWrite(AN2, HIGH);
-      analogWrite(PWM01, (unsigned int) mappedVertical);
-      digitalWrite(BN1, HIGH);
-      digitalWrite(BN2, LOW);
-      analogWrite(PWM02, (unsigned int) mappedVertical);
-    }
+  isSpinning = messageObject["spin"];
+  if (isSpinning) {
+    spin(horizontal);
   } else if (vertical > 0.0 && !calibrationAxis) {
-    mappedVertical = vertical * 255.0;
-    digitalWrite(AN1, HIGH);
-    digitalWrite(AN2, LOW);
-    analogWrite(PWM01, (unsigned int) mappedVertical);
-    digitalWrite(BN1, HIGH);
-    digitalWrite(BN2, LOW);
+    forward(vertical, horizontal);
   } else if (vertical < 0.0 && !calibrationAxis) {
-    mappedVertical = -vertical * 255.0;
-    digitalWrite(AN1, LOW);
-    digitalWrite(AN2, HIGH);
-    analogWrite(PWM01, (unsigned int) mappedVertical);
-    digitalWrite(BN1, LOW);
-    digitalWrite(BN2, HIGH);
-    analogWrite(PWM02, (unsigned int) mappedVertical);
+    backward(vertical, horizontal);
   } else {
-    digitalWrite(AN1, LOW);
-    digitalWrite(AN2, LOW);
-    digitalWrite(BN1, LOW);
-    digitalWrite(BN2, LOW);
-    analogWrite(PWM01, 0);
-    analogWrite(PWM02, 0);
+    stop();
   }
 
   steer(horizontal);

@@ -17,6 +17,7 @@
   };
 
   var calibrating = false;
+  var spin = false;
   // I've numbered the axes starting with '1', so zero is no-axis selected
   var calibrationAxis = 0;
   var calibrationPoint = "middle"; // "start || middle || end"
@@ -34,7 +35,6 @@
       .on("added", function (_, nipple) {
         nipple.on("start move", function () {
           calibrating = calibrationAxis ? true : false;
-          console.log("start move calibrationAxis: ", calibrationAxis, calibrating);
           currentJoystickPosition.horizontal = nipple.frontPosition.x / 150.0;
           currentJoystickPosition.vertical = nipple.frontPosition.y / 150.0;
           websocketOpen &&
@@ -45,6 +45,7 @@
                 calibrating,
                 calibrationAxis,
                 calibrationPoint,
+                spin,
                 timestamp: Date.now(),
               })
             );
@@ -69,6 +70,7 @@
               calibrating,
               calibrationAxis,
               calibrationPoint,
+              spin,
               timestamp: Date.now(),
             })
           );
@@ -94,6 +96,7 @@
               calibrating,
               calibrationAxis,
               calibrationPoint,
+              spin,
               timestamp: Date.now(),
             })
           );
@@ -110,19 +113,52 @@
     switch (window.location.hash) {
       case "#leftfrontcalibrate":
         calibrationAxis = 1;
+        spin = false;
         break;
       case "#rightfrontcalibrate":
         calibrationAxis = 2;
+        spin = false;
         break;
       case "#leftrearcalibrate":
         calibrationAxis = 5;
+        spin = false;
         break;
       case "#rightrearcalibrate":
         calibrationAxis = 6;
+        spin = false;
         break;
       case "#move":
+        spin = false;
+        websocketOpen &&
+          websocket.send(
+            JSON.stringify({
+              horizontal: 0,
+              vertical: 0,
+              calibrating,
+              calibrationAxis,
+              calibrationPoint,
+              spin,
+              timestamp: Date.now(),
+            })
+          );
+        break;
+      case "#spin":
+        spin = true;
+        websocketOpen &&
+          websocket.send(
+            JSON.stringify({
+              horizontal: 0,
+              vertical: 0,
+              calibrating,
+              calibrationAxis,
+              calibrationPoint,
+              spin,
+              timestamp: Date.now(),
+            })
+          );
         break;
       default:
+        spin = false;
         break;
     }
   };

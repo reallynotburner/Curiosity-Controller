@@ -34,6 +34,7 @@ AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
 bool calibrating = false;
+bool spin = false;
 unsigned short calibrationAxis = 0;
 
 // uS +/- of center to add to the incoming controls
@@ -141,6 +142,7 @@ void steer (float horizontal) {
 
 void updateMotors(String message) {
   float mappedVertical = 0;
+  float mappedHorizontal = 0;
 
   JsonDocument messageObject;
   deserializeJson(messageObject, message);
@@ -149,18 +151,32 @@ void updateMotors(String message) {
   float vertical = messageObject["vertical"];
   calibrationAxis = messageObject["calibrationAxis"];
   calibrating = messageObject["calibrating"];
-
+  spin = messageObject["spin"];
   // find direction and speed of motors
-  if (vertical > 0.0 && !calibrationAxis) {
+  if (spin) {
+    mappedHorizontal = horizontal * 255.0;
+    if (horizontal > 0) {
+      digitalWrite(AN1, HIGH);
+      digitalWrite(AN2, LOW);
+      analogWrite(PWM01, (unsigned int) mappedVertical);
+      digitalWrite(BN1, LOW);
+      digitalWrite(BN2, HIGH);
+      analogWrite(PWM02, (unsigned int) mappedVertical);
+    } else {
+      digitalWrite(AN1, LOW);
+      digitalWrite(AN2, HIGH);
+      analogWrite(PWM01, (unsigned int) mappedVertical);
+      digitalWrite(BN1, HIGH);
+      digitalWrite(BN2, LOW);
+      analogWrite(PWM02, (unsigned int) mappedVertical);
+    }
+  } else if (vertical > 0.0 && !calibrationAxis) {
     mappedVertical = vertical * 255.0;
     digitalWrite(AN1, HIGH);
     digitalWrite(AN2, LOW);
     analogWrite(PWM01, (unsigned int) mappedVertical);
     digitalWrite(BN1, HIGH);
     digitalWrite(BN2, LOW);
-    analogWrite(PWM02, (unsigned int) mappedVertical);
-    // Serial.print("forward at: ");
-    // Serial.println((unsigned int) mappedVertical);
   } else if (vertical < 0.0 && !calibrationAxis) {
     mappedVertical = -vertical * 255.0;
     digitalWrite(AN1, LOW);
@@ -169,10 +185,7 @@ void updateMotors(String message) {
     digitalWrite(BN1, LOW);
     digitalWrite(BN2, HIGH);
     analogWrite(PWM02, (unsigned int) mappedVertical);
-    // Serial.print("backward at: ");
-    // Serial.println((unsigned int) mappedVertical);
   } else {
-    // Serial.println("Zero Motors!");
     digitalWrite(AN1, LOW);
     digitalWrite(AN2, LOW);
     digitalWrite(BN1, LOW);
@@ -190,7 +203,6 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
     // How to ingest the incoming data from web clients, without weird symbols and overflow values:
     String rawData = (char *)data;
     String message = rawData.substring(0, len);
-    // Serial.println(message);
     updateMotors(message);
     String sensorReadings = getSensorReadings();
     notifyClients(sensorReadings);
@@ -221,7 +233,7 @@ void initWebSocket() {
 
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(19200);
 
   WiFi.softAP(ssid, password);
 
@@ -257,7 +269,6 @@ void setup() {
 void loop() {
   if ((millis() - lastTime) > timerDelay) {
     String sensorReadings = getSensorReadings();
-    // Serial.print(sensorReadings);
     notifyClients(sensorReadings);
     lastTime = millis();
   }

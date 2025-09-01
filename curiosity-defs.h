@@ -2,6 +2,10 @@
 #define CURIOSITY_HEADER
 
 #include <ArduinoJson.h>
+#include <Preferences.h>
+
+// Store preferences, like steering calibration
+Preferences preferences;
 
 // Replace with your network credentials
 const char *ssid = "curiosity";
@@ -30,6 +34,15 @@ Servo steer02;
 Servo steer05;
 Servo steer06;
 
+// uS +/- of center to add to the incoming controls
+short steerCal01 = 0;          // calibration from preferences
+short steerCal02 = 0;
+short steerCal05 = 0;
+short steerCal06 = 0;
+char *steerKey01 = "steer01";  // the name of the calibration value for storage and retrieval
+char *steerKey02 = "steer02";
+char *steerKey05 = "steer05";
+char *steerKey06 = "steer06";
 
 // Timer variables
 unsigned long lastTime = 0;
@@ -97,8 +110,15 @@ void backward(float vertical, float horizontal) {
     Serial.println(mappedVertical);
 }
 
-void spin(float horizontal) {
+void spin(float horizontal) {    
+    // Toe-in all the steering servoes
+    steer01.writeMicroseconds(steerCal01 - 300 + 1500);
+    steer02.writeMicroseconds(steerCal02 - 300 + 1500);
+    steer05.writeMicroseconds(steerCal05 + 300 + 1500);
+    steer06.writeMicroseconds(steerCal06 - 300 + 1500);
+
     unsigned int mappedHorizontal = (unsigned int) abs(horizontal * 255.0);
+
     if (horizontal > 0) {
       digitalWrite(AN1, HIGH);
       digitalWrite(AN2, LOW);
@@ -128,6 +148,52 @@ void stop() {
     analogWrite(PWM01, 0);
     analogWrite(PWM02, 0);
     Serial.println("STOPPED");
+}
+
+void storeValue (char *key, short value) {
+  preferences.begin("preferences", false);
+  short currentVal = preferences.getShort(key, 0);
+
+  Serial.print(key);
+  Serial.print(" current value: ");
+  Serial.println(currentVal);
+
+  preferences.putShort(key, value);
+  currentVal = preferences.getShort(key, 0);
+  preferences.end();
+
+  Serial.print(key);
+  Serial.print(" updated value is: ");
+  Serial.println(currentVal);
+}
+
+short getStoredValue (char *key) {
+  preferences.begin("preferences", false);
+  short currentVal = preferences.getShort(key, 0);
+
+  Serial.print("retrieving current value: ");
+  Serial.print(key);
+  Serial.print(": ");
+  Serial.println(currentVal);
+  return currentVal;
+}
+
+void initSteering() {
+  steerCal01 = getStoredValue(steerKey01);
+  steerCal02 = getStoredValue(steerKey02);
+  steerCal05 = getStoredValue(steerKey05);
+  steerCal06 = getStoredValue(steerKey06);
+  
+  steer01.attach(STEER01);
+  steer01.attach(STEER02);
+  steer05.attach(STEER05);
+  steer06.attach(STEER06);
+  
+  // move steering servos to middle position
+  steer01.writeMicroseconds(steerCal01 + 1500);
+  steer02.writeMicroseconds(steerCal02 + 1500);
+  steer05.writeMicroseconds(steerCal05 + 1500);
+  steer06.writeMicroseconds(steerCal06 + 1500);
 }
 
 #endif // CURIOSITY_HEADER

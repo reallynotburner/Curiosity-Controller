@@ -88,34 +88,46 @@ void initLittleFS() {
 
 void forward(float vertical, float horizontal) {
     unsigned int mappedVertical = (unsigned int) abs(vertical * 255.0);
+    unsigned int mappedHorizontal = (unsigned int) abs(horizontal * 128.0);
     digitalWrite(AN1, HIGH);
     digitalWrite(AN2, LOW);
-    analogWrite(PWM01, mappedVertical);
     digitalWrite(BN1, HIGH);
     digitalWrite(BN2, LOW);
-    analogWrite(PWM02, mappedVertical);
+    if (horizontal > 0) {
+      analogWrite(PWM01, mappedVertical);
+      analogWrite(PWM02, mappedVertical - mappedHorizontal);
+    } else {
+      analogWrite(PWM01, mappedVertical - mappedHorizontal);
+      analogWrite(PWM02, mappedVertical);
+    }
     Serial.print("forward: ");
     Serial.println(mappedVertical);
 }
 
 void backward(float vertical, float horizontal) {
     unsigned int mappedVertical = (unsigned int) abs(vertical * 255.0);
+    unsigned int mappedHorizontal = (unsigned int) abs(horizontal * 255.0);
     digitalWrite(AN1, LOW);
     digitalWrite(AN2, HIGH);
-    analogWrite(PWM01, mappedVertical);
     digitalWrite(BN1, LOW);
     digitalWrite(BN2, HIGH);
-    analogWrite(PWM02, mappedVertical);
+    if (horizontal > 0) {
+      analogWrite(PWM01, mappedVertical);
+      analogWrite(PWM02, mappedVertical - mappedHorizontal);
+    } else {
+      analogWrite(PWM01, mappedVertical - mappedHorizontal);
+      analogWrite(PWM02, mappedVertical);
+    }
     Serial.print("backward: ");
     Serial.println(mappedVertical);
 }
 
 void spin(float horizontal) {    
     // Toe-in all the steering servoes
-    steer01.writeMicroseconds(steerCal01 - 300 + 1500);
-    steer02.writeMicroseconds(steerCal02 - 300 + 1500);
-    steer05.writeMicroseconds(steerCal05 + 300 + 1500);
-    steer06.writeMicroseconds(steerCal06 - 300 + 1500);
+    steer01.writeMicroseconds(steerCal01 - 400 + 1500);
+    steer02.writeMicroseconds(steerCal02 + 400 + 1500);
+    steer05.writeMicroseconds(steerCal05 + 400 + 1500);
+    steer06.writeMicroseconds(steerCal06 - 400 + 1500);
 
     unsigned int mappedHorizontal = (unsigned int) abs(horizontal * 255.0);
 
@@ -185,7 +197,7 @@ void initSteering() {
   steerCal06 = getStoredValue(steerKey06);
   
   steer01.attach(STEER01);
-  steer01.attach(STEER02);
+  steer02.attach(STEER02);
   steer05.attach(STEER05);
   steer06.attach(STEER06);
   

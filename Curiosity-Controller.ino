@@ -21,11 +21,7 @@
 #include <ArduinoJson.h>
 #include <ESPmDNS.h>
 #include <ESP32Servo.h>
-#include <Preferences.h>
 #include <curiosity-defs.h>
-
-// Store preferences, like steering calibration
-Preferences preferences;
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -37,46 +33,8 @@ bool calibrating = false;
 bool isSpinning = false;
 unsigned short calibrationAxis = 0;
 
-// uS +/- of center to add to the incoming controls
-short steerCal01 = 0;          // calibration from preferences
-short steerCal02 = 0;
-short steerCal05 = 0;
-short steerCal06 = 0;
-char *steerKey01 = "steer01";  // the name of the calibration value for storage and retrieval
-char *steerKey02 = "steer02";
-char *steerKey05 = "steer05";
-char *steerKey06 = "steer06";
-
 void notifyClients(String sensorReadings) {
   ws.textAll(sensorReadings);
-}
-
-void storeValue (char *key, short value) {
-  preferences.begin("preferences", false);
-  short currentVal = preferences.getShort(key, 0);
-
-  Serial.print(key);
-  Serial.print(" current value: ");
-  Serial.println(currentVal);
-
-  preferences.putShort(key, value);
-  currentVal = preferences.getShort(key, 0);
-  preferences.end();
-
-  Serial.print(key);
-  Serial.print(" updated value is: ");
-  Serial.println(currentVal);
-}
-
-short getStoredValue (char *key) {
-  preferences.begin("preferences", false);
-  short currentVal = preferences.getShort(key, 0);
-
-  Serial.print("retrieving current value: ");
-  Serial.print(key);
-  Serial.print(": ");
-  Serial.println(currentVal);
-  return currentVal;
 }
 
 void steer (float horizontal) {
@@ -89,14 +47,13 @@ void steer (float horizontal) {
   if (!calibrationAxis) {  // regular steering, control all motors
     diff = (int)(500.0 * horizontal);
     value01 = steerCal01 - diff + 1500;
-    value02 = steerCal02 + diff + 1500;
+    value02 = steerCal02 - diff + 1500;
     value05 = steerCal05 + diff + 1500;
     value06 = steerCal06 + diff + 1500;
     steer01.writeMicroseconds(value01);
     steer02.writeMicroseconds(value02);
     steer05.writeMicroseconds(value05);
     steer06.writeMicroseconds(value06);
-    // TODO: add the other steering motors
   } else {  // calibration mode, only do one motor at a time
     diff = (int)(50.0 * horizontal);
     switch (calibrationAxis) {
@@ -155,14 +112,15 @@ void updateMotors(String message) {
   if (isSpinning) {
     spin(horizontal);
   } else if (vertical > 0.0 && !calibrationAxis) {
+    steer(horizontal);
     forward(vertical, horizontal);
   } else if (vertical < 0.0 && !calibrationAxis) {
+    steer(horizontal);
     backward(vertical, horizontal);
   } else {
+    steer(0);
     stop();
   }
-
-  steer(horizontal);
 }
 
 void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
@@ -224,14 +182,7 @@ void setup() {
   Serial.println("mDNS responder started");
 
   initMotor();
-  steerCal01 = getStoredValue(steerKey01);
-  steerCal02 = getStoredValue(steerKey02);
-  steerCal05 = getStoredValue(steerKey05);
-  steerCal06 = getStoredValue(steerKey06);
-  steer01.attach(STEER01);
-  steer01.attach(STEER02);
-  steer05.attach(STEER05);
-  steer06.attach(STEER06);
+  initSteering();
 }
 
 void loop() {

@@ -36,7 +36,7 @@
         nipple.on("start move", function () {
           calibrating = calibrationAxis ? true : false;
           currentJoystickPosition.horizontal = nipple.frontPosition.x / 150.0;
-          currentJoystickPosition.vertical = nipple.frontPosition.y / 150.0;
+          currentJoystickPosition.vertical = nipple.frontPosition.y / -150.0;
           websocketOpen &&
             websocket.send(
               JSON.stringify({
@@ -61,7 +61,7 @@
           );
         }
         currentJoystickPosition.horizontal = calibrationAxis ? nipple.frontPosition.x / 150.0 : 0;
-        currentJoystickPosition.vertical = calibrationAxis ? nipple.frontPosition.y / 150.0 : 0;
+        currentJoystickPosition.vertical = calibrationAxis ? nipple.frontPosition.y / -150.0 : 0;
         websocketOpen &&
           websocket.send(
             JSON.stringify({

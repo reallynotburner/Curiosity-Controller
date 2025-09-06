@@ -30,6 +30,11 @@
     websocket.onmessage = onMessage;
   }
 
+  function updateConnectionStatus(state) {
+    let el = document.getElementById("connection-status");
+    el.innerHTML = state ? "\u2705" : "\u274C";
+  }
+
   function initJoystick() {
     manager
       .on("added", function (_, nipple) {
@@ -104,6 +109,7 @@
   }
 
   window.addEventListener("load", () => {
+    updateConnectionStatus(false);
     initWebSocket();
     initJoystick();
   });
@@ -166,10 +172,12 @@
   // When websocket is established, call the getReadings() function
   function onOpen() {
     websocketOpen = true;
+    updateConnectionStatus(true);
   }
 
   function onClose(event) {
     websocketOpen = false;
+    updateConnectionStatus(false);
     setTimeout(initWebSocket, 2000);
   }
 

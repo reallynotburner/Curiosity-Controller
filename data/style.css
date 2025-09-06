@@ -115,6 +115,25 @@ body {
   display: block;
 }
 
+.telemetry {
+  display: flex;
+  justify-content: space-around;
+}
+
+.telemetry-item {
+  height: 35px;
+  margin: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: greenyellow;
+  background-color: black;
+  font-weight: bold;
+  border-radius: 10px;
+  text-align: center;
+  line-height: 35px;
+  border: none;
+}
+
 @media (orientation: portrait) {
   .flex-container {
     flex-direction: column;

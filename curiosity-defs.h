@@ -48,6 +48,19 @@ char *steerKey06 = "steer06";
 unsigned long lastTime = 0;
 unsigned long timerDelay = 10000;
 
+// 273.45 reading units per volt.
+const int supplySense = 32;
+float voltageRatio = 273.45;
+
+float getVoltage(int pin) {
+  int voltageValue = analogReadMilliVolts(pin);
+  float voltageConverted = voltageValue / voltageRatio;
+  Serial.print("Voltage Sensed: ");
+  Serial.print(voltageConverted);
+  Serial.println(" volts");
+  return voltageConverted;
+}
+
 void initMotor() {
   // configure motor PWM
   pinMode(PWM01, OUTPUT);
@@ -73,6 +86,8 @@ String getSensorReadings() {
   sensorReadings["temperature"] = "Hot!";
   sensorReadings["humidity"] = "Moist!";
   sensorReadings["pressure"] = "Vacuous!";
+  float supplyVoltage = getVoltage(supplySense);
+  sensorReadings["supplyVoltage"] = supplyVoltage;
   char serializedReadings[256];
   serializeJson(sensorReadings, serializedReadings);
   return serializedReadings;

@@ -117,8 +117,8 @@ void updateMotors(String message) {
   } else if (vertical < 0.0 && !calibrationAxis) {
     steer(horizontal);
     backward(vertical, horizontal);
-  } else {
-    steer(0);
+  } else { // calibration mode, 
+    steer(horizontal);
     stop();
   }
 }

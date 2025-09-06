@@ -55,9 +55,9 @@ float voltageRatio = 273.45;
 float getVoltage(int pin) {
   int voltageValue = analogReadMilliVolts(pin);
   float voltageConverted = voltageValue / voltageRatio;
-  Serial.print("Voltage Sensed: ");
-  Serial.print(voltageConverted);
-  Serial.println(" volts");
+  // Serial.print("Voltage Sensed: ");
+  // Serial.print(voltageConverted);
+  // Serial.println(" volts");
   return voltageConverted;
 }
 
@@ -115,8 +115,8 @@ void forward(float vertical, float horizontal) {
       analogWrite(PWM01, mappedVertical - mappedHorizontal);
       analogWrite(PWM02, mappedVertical);
     }
-    Serial.print("forward: ");
-    Serial.println(mappedVertical);
+    // Serial.print("forward: ");
+    // Serial.println(mappedVertical);
 }
 
 void backward(float vertical, float horizontal) {
@@ -133,8 +133,8 @@ void backward(float vertical, float horizontal) {
       analogWrite(PWM01, mappedVertical - mappedHorizontal);
       analogWrite(PWM02, mappedVertical);
     }
-    Serial.print("backward: ");
-    Serial.println(mappedVertical);
+    // Serial.print("backward: ");
+    // Serial.println(mappedVertical);
 }
 
 void spin(float horizontal) {    
@@ -162,8 +162,8 @@ void spin(float horizontal) {
       digitalWrite(BN1, HIGH);
       digitalWrite(BN2, LOW);
       analogWrite(PWM02, mappedHorizontal);
-      Serial.print("spin left: ");
-      Serial.println(mappedHorizontal);
+      // Serial.print("spin left: ");
+      // Serial.println(mappedHorizontal);
     }
 }
 
@@ -174,7 +174,7 @@ void stop() {
     digitalWrite(BN2, LOW);
     analogWrite(PWM01, 0);
     analogWrite(PWM02, 0);
-    Serial.println("STOPPED");
+    // Serial.println("STOPPED");
 }
 
 void storeValue (char *key, short value) {

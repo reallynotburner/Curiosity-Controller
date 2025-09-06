@@ -176,5 +176,9 @@
   // Function that receives the message from the ESP32 with the readings
   function onMessage(event) {
     console.log("message from ESP32", event.data);
+    let parsedData = JSON.parse(event.data);
+    let formattedData = Number.parseFloat(parsedData.supplyVoltage).toFixed(2)
+    let supplyVoltsDisplay = document.getElementById("supply-voltage");
+    supplyVoltsDisplay.innerHTML = formattedData;
   }
 })();

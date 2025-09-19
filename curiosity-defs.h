@@ -89,6 +89,10 @@ String getSensorReadings() {
   sensorReadings["pressure"] = "Vacuous!";
   float supplyVoltage = getVoltage(supplySense);
   sensorReadings["supplyVoltage"] = supplyVoltage;
+  sensorReadings["cal01"] = steerCal01;
+  sensorReadings["cal02"] = steerCal02;
+  sensorReadings["cal05"] = steerCal05;
+  sensorReadings["cal06"] = steerCal06;
   char serializedReadings[256];
   serializeJson(sensorReadings, serializedReadings);
   return serializedReadings;

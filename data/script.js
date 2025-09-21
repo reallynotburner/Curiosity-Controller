@@ -188,5 +188,13 @@
     let formattedData = Number.parseFloat(parsedData.supplyVoltage).toFixed(2)
     let supplyVoltsDisplay = document.getElementById("supply-voltage");
     supplyVoltsDisplay.innerHTML = formattedData;
+    let cal01Data = document.getElementById("cal01");
+    let cal02Data = document.getElementById("cal02");
+    let cal05Data = document.getElementById("cal05");
+    let cal06Data = document.getElementById("cal06");
+    cal01Data.innerHTML = Number.parseInt(parsedData.cal01);
+    cal02Data.innerHTML = Number.parseInt(parsedData.cal02);
+    cal05Data.innerHTML = Number.parseInt(parsedData.cal05);
+    cal06Data.innerHTML = Number.parseInt(parsedData.cal06);
   }
 })();

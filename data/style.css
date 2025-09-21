@@ -134,6 +134,14 @@ body {
   border: none;
 }
 
+.calibration {
+  height: 20px;
+  line-height: 20px;
+  font-weight:normal;
+  list-style-type: none;
+  text-align: left;
+}
+
 @media (orientation: portrait) {
   .flex-container {
     flex-direction: column;

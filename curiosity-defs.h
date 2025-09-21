@@ -48,9 +48,10 @@ char *steerKey06 = "steer06";
 unsigned long lastTime = 0;
 unsigned long timerDelay = 10000;
 
-// 273.45 reading units per volt.
+// 182.65 reading units per volt.
+// 5.20 volts as 5.193 volts 
 const int supplySense = 32;
-float voltageRatio = 273.45;
+float voltageRatio = 182.7;
 
 float getVoltage(int pin) {
   int voltageValue = analogReadMilliVolts(pin);
@@ -88,6 +89,10 @@ String getSensorReadings() {
   sensorReadings["pressure"] = "Vacuous!";
   float supplyVoltage = getVoltage(supplySense);
   sensorReadings["supplyVoltage"] = supplyVoltage;
+  sensorReadings["cal01"] = steerCal01;
+  sensorReadings["cal02"] = steerCal02;
+  sensorReadings["cal05"] = steerCal05;
+  sensorReadings["cal06"] = steerCal06;
   char serializedReadings[256];
   serializeJson(sensorReadings, serializedReadings);
   return serializedReadings;

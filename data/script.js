@@ -21,6 +21,8 @@
   // I've numbered the axes starting with '1', so zero is no-axis selected
   var calibrationAxis = 0;
   var calibrationPoint = "middle"; // "start || middle || end"
+  var lastWebsocketTime = Date.now();
+  var websocketCooldownTime = 42; // 24hz responsiveness
 
   // Init web socket when the page loads
   function initWebSocket() {
@@ -42,6 +44,12 @@
           calibrating = calibrationAxis ? true : false;
           currentJoystickPosition.horizontal = nipple.frontPosition.x / 150.0;
           currentJoystickPosition.vertical = nipple.frontPosition.y / -150.0;
+          let now = Date.now();
+          if (now - lastWebsocketTime < websocketCooldownTime) {
+            return;
+          } else {
+            lastWebsocketTime = now;
+          }
           websocketOpen &&
             websocket.send(
               JSON.stringify({
@@ -67,6 +75,12 @@
         }
         currentJoystickPosition.horizontal = calibrationAxis ? nipple.frontPosition.x / 150.0 : 0;
         currentJoystickPosition.vertical = calibrationAxis ? nipple.frontPosition.y / -150.0 : 0;
+        let now = Date.now();
+        if (now - lastWebsocketTime < websocketCooldownTime) {
+          return;
+        } else {
+          lastWebsocketTime = now;
+        }
         websocketOpen &&
           websocket.send(
             JSON.stringify({
@@ -93,6 +107,12 @@
           vertical: 0,
         }
         calibrating = false;
+        let now = Date.now();
+        if (now - lastWebsocketTime < websocketCooldownTime) {
+          return;
+        } else {
+          lastWebsocketTime = now;
+        }
         websocketOpen &&
           websocket.send(
             JSON.stringify({
@@ -116,6 +136,7 @@
 
   window.onhashchange = (evt) => {
     calibrationAxis = 0; // reset the state
+    let now = Date.now();
     switch (window.location.hash) {
       case "#leftfrontcalibrate":
         calibrationAxis = 1;
@@ -135,6 +156,11 @@
         break;
       case "#move":
         spin = false;
+        if (now - lastWebsocketTime < websocketCooldownTime) {
+          return;
+        } else {
+          lastWebsocketTime = now;
+        }
         websocketOpen &&
           websocket.send(
             JSON.stringify({
@@ -150,6 +176,11 @@
         break;
       case "#spin":
         spin = true;
+        if (now - lastWebsocketTime < websocketCooldownTime) {
+          return;
+        } else {
+          lastWebsocketTime = now;
+        }
         websocketOpen &&
           websocket.send(
             JSON.stringify({
@@ -175,10 +206,10 @@
     updateConnectionStatus(true);
   }
 
-  function onClose(event) {
+  function onClose() {
     websocketOpen = false;
     updateConnectionStatus(false);
-    setTimeout(initWebSocket, 2000);
+    initWebSocket();
   }
 
   // Function that receives the message from the ESP32 with the readings

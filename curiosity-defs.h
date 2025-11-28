@@ -9,7 +9,7 @@ Preferences preferences;
 
 // Replace with your network credentials
 const char *ssid = "curiosity";
-const char *password = "callyourmom";
+const char *password = "marsrover";
 
 // Motor Driver pins
 const int PWM01 = 26;

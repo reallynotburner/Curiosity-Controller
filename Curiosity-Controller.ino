@@ -22,6 +22,7 @@
 #include <ESPmDNS.h>
 #include <ESP32Servo.h>
 #include <curiosity-defs.h>
+#include <led-array.h>
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -139,13 +140,38 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
   switch (type) {
     case WS_EVT_CONNECT:
       Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
+      yellowOn();
+      delay(5);
+      allLedsOff();
+      delay(5);
+      yellowOn();
+      delay(5);
+      allLedsOff();
+      delay(5);
+      yellowOn();
+      delay(5);
+      allLedsOff();
       break;
     case WS_EVT_DISCONNECT:
       Serial.printf("WebSocket client #%u disconnected\n", client->id());
       stop();
+      redOn();
+      delay(5);
+      allLedsOff();
+      delay(5);
+      redOn();
+      delay(5);
+      allLedsOff();
+      delay(5);
+      redOn();
+      delay(5);
+      allLedsOff();
       break;
     case WS_EVT_DATA:
       handleWebSocketMessage(arg, data, len);
+      salmonOn();
+      delay(10);
+      allLedsOff();
       break;
     case WS_EVT_PONG:
     case WS_EVT_ERROR:
@@ -158,9 +184,8 @@ void initWebSocket() {
   server.addHandler(&ws);
 }
 
-
 void setup() {
-  Serial.begin(19200);
+  Serial.begin(115200);
 
   WiFi.softAP(ssid, password);
 
@@ -170,6 +195,9 @@ void setup() {
   // Web Server Root URL
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(LittleFS, "/index.html", "text/html");
+    blueOn();
+    delay(200);
+    allLedsOff();
   });
   server.serveStatic("/", LittleFS, "/");
   server.begin();
@@ -184,6 +212,10 @@ void setup() {
 
   initMotor();
   initSteering();
+  initLedArray();
+  greenOn();
+  delay(500);
+  allLedsOff();
 }
 
 void loop() {

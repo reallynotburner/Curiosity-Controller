@@ -9,7 +9,7 @@ Preferences preferences;
 
 // Replace with your network credentials
 const char *ssid = "curiosity";
-const char *password = "callyourmom";
+const char *password = "marsrover";
 
 // Motor Driver pins
 const int PWM01 = 26;
@@ -19,6 +19,7 @@ const int STBY = 27;
 const int PWM02 = 16;
 const int BN1 = 4;
 const int BN2 = 2;
+const int RCPULSEIN = 5;
 
 // setting motor PWM properties
 const int freq = 5000;

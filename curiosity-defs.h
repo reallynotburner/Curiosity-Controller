@@ -108,17 +108,17 @@ void initLittleFS() {
 
 void forward(float vertical, float horizontal) {
     unsigned int mappedVertical = (unsigned int) abs(vertical * 255.0);
-    unsigned int mappedHorizontal = (unsigned int) abs(horizontal * 128.0);
+    unsigned int mappedHorizontal = (unsigned int) abs(horizontal * 64.0);
     digitalWrite(AN1, HIGH);
     digitalWrite(AN2, LOW);
     digitalWrite(BN1, HIGH);
     digitalWrite(BN2, LOW);
     if (horizontal > 0) {
-      analogWrite(PWM01, mappedVertical);
-      analogWrite(PWM02, mappedVertical - mappedHorizontal);
-    } else {
       analogWrite(PWM01, mappedVertical - mappedHorizontal);
       analogWrite(PWM02, mappedVertical);
+    } else {
+      analogWrite(PWM01, mappedVertical);
+      analogWrite(PWM02, mappedVertical - mappedHorizontal);
     }
     // Serial.print("forward: ");
     // Serial.println(mappedVertical);
@@ -126,28 +126,29 @@ void forward(float vertical, float horizontal) {
 
 void backward(float vertical, float horizontal) {
     unsigned int mappedVertical = (unsigned int) abs(vertical * 255.0);
-    unsigned int mappedHorizontal = (unsigned int) abs(horizontal * 255.0);
+    unsigned int mappedHorizontal = (unsigned int) abs(horizontal * 64.0);
     digitalWrite(AN1, LOW);
     digitalWrite(AN2, HIGH);
     digitalWrite(BN1, LOW);
     digitalWrite(BN2, HIGH);
     if (horizontal > 0) {
-      analogWrite(PWM01, mappedVertical);
-      analogWrite(PWM02, mappedVertical - mappedHorizontal);
-    } else {
       analogWrite(PWM01, mappedVertical - mappedHorizontal);
       analogWrite(PWM02, mappedVertical);
+    } else {
+      analogWrite(PWM01, mappedVertical);
+      analogWrite(PWM02, mappedVertical - mappedHorizontal);
     }
     // Serial.print("backward: ");
     // Serial.println(mappedVertical);
 }
 
 void spin(float horizontal) {    
+    int spinLocation = 500;
     // Toe-in all the steering servoes
-    steer01.writeMicroseconds(steerCal01 - 400 + 1500);
-    steer02.writeMicroseconds(steerCal02 + 400 + 1500);
-    steer05.writeMicroseconds(steerCal05 + 400 + 1500);
-    steer06.writeMicroseconds(steerCal06 - 400 + 1500);
+    steer01.writeMicroseconds(steerCal01 - spinLocation + 1500);
+    steer02.writeMicroseconds(steerCal02 - spinLocation + 1500);
+    steer05.writeMicroseconds(steerCal05 + spinLocation + 1500);
+    steer06.writeMicroseconds(steerCal06 - spinLocation + 1500);
 
     unsigned int mappedHorizontal = (unsigned int) abs(horizontal * 255.0);
 

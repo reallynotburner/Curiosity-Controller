@@ -114,11 +114,11 @@ void forward(float vertical, float horizontal) {
     digitalWrite(BN1, HIGH);
     digitalWrite(BN2, LOW);
     if (horizontal > 0) {
-      analogWrite(PWM01, mappedVertical);
-      analogWrite(PWM02, mappedVertical - mappedHorizontal);
-    } else {
       analogWrite(PWM01, mappedVertical - mappedHorizontal);
       analogWrite(PWM02, mappedVertical);
+    } else {
+      analogWrite(PWM01, mappedVertical);
+      analogWrite(PWM02, mappedVertical - mappedHorizontal);
     }
     // Serial.print("forward: ");
     // Serial.println(mappedVertical);
@@ -145,7 +145,7 @@ void backward(float vertical, float horizontal) {
 void spin(float horizontal) {    
     // Toe-in all the steering servoes
     steer01.writeMicroseconds(steerCal01 - 400 + 1500);
-    steer02.writeMicroseconds(steerCal02 + 400 + 1500);
+    steer02.writeMicroseconds(steerCal02 - 400 + 1500);
     steer05.writeMicroseconds(steerCal05 + 400 + 1500);
     steer06.writeMicroseconds(steerCal06 - 400 + 1500);
 

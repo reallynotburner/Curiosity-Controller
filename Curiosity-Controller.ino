@@ -50,7 +50,7 @@ void steer (float horizontal) {
   if (!calibrationAxis) {  // regular steering, control all motors
     diff = (int)(500.0 * horizontal);
     value01 = steerCal01 - diff + 1500;
-    value02 = steerCal02 - diff + 1500;
+    value02 = steerCal02 + diff + 1500;
     value05 = steerCal05 + diff + 1500;
     value06 = steerCal06 + diff + 1500;
     steer01.writeMicroseconds(value01);

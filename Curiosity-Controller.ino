@@ -43,16 +43,29 @@ void notifyClients(String sensorReadings) {
 void steer (float horizontal) {
   // find steering values
   int diff = 0;
+  int outerDiff = 0;
   int value01 = 0;
   int value02 = 0;
   int value05 = 0;
   int value06 = 0;
   if (!calibrationAxis) {  // regular steering, control all motors
     diff = (int)(500.0 * horizontal);
-    value01 = steerCal01 - diff + 1500;
-    value02 = steerCal02 + diff + 1500;
-    value05 = steerCal05 + diff + 1500;
-    value06 = steerCal06 + diff + 1500;
+    // do some trig.
+    // sin() is in radians.  horizontal = 0 is pointing straight ahead.
+    // horizontal = 1 is about 2 radians so...
+    outerDiff = (int)(diff / 2);
+
+    if (diff > 0) {
+      value01 = steerCal01 - outerDiff + 1500;
+      value02 = steerCal02 + diff + 1500;
+      value05 = steerCal05 + outerDiff + 1500;
+      value06 = steerCal06 + diff + 1500;
+    } else {
+      value01 = steerCal01 - diff + 1500;
+      value02 = steerCal02 + outerDiff + 1500;
+      value05 = steerCal05 + diff + 1500;
+      value06 = steerCal06 + outerDiff + 1500;
+    }
     steer01.writeMicroseconds(value01);
     steer02.writeMicroseconds(value02);
     steer05.writeMicroseconds(value05);

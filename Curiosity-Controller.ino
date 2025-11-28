@@ -6,6 +6,8 @@
   https://RandomNerdTutorials.com/esp32-websocket-server-sensor/
   Frank Poth:
   https://github.com/pothonprogramming/pothonprogramming.github.io/tree/master/content/touch-controller
+  pcbreflux:
+  https://github.com/pcbreflux/espressif/tree/master/esp32/arduino/sketchbook/ESP32_APA102
 
   reallynotburner@gmail.com
   Joshua Brown 2025 
@@ -140,38 +142,16 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
   switch (type) {
     case WS_EVT_CONNECT:
       Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
-      yellowOn();
-      delay(5);
-      allLedsOff();
-      delay(5);
-      yellowOn();
-      delay(5);
-      allLedsOff();
-      delay(5);
-      yellowOn();
-      delay(5);
-      allLedsOff();
+      ledCautionAlert();
       break;
     case WS_EVT_DISCONNECT:
       Serial.printf("WebSocket client #%u disconnected\n", client->id());
       stop();
-      redOn();
-      delay(5);
-      allLedsOff();
-      delay(5);
-      redOn();
-      delay(5);
-      allLedsOff();
-      delay(5);
-      redOn();
-      delay(5);
-      allLedsOff();
+      ledCriticalAlert();
       break;
     case WS_EVT_DATA:
       handleWebSocketMessage(arg, data, len);
-      salmonOn();
-      delay(10);
-      allLedsOff();
+      ledReceiveAlert();
       break;
     case WS_EVT_PONG:
     case WS_EVT_ERROR:

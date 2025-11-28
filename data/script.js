@@ -206,7 +206,7 @@
     updateConnectionStatus(true);
   }
 
-  function onClose(event) {
+  function onClose() {
     websocketOpen = false;
     updateConnectionStatus(false);
     initWebSocket();

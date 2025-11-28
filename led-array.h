@@ -20,7 +20,6 @@ void ledWriteByte(uint8_t b) {
 }
 
 void ledStartFrame() {
-  //Serial.println("startFrame");
   ledWriteByte(0);
   ledWriteByte(0);
   ledWriteByte(0);
@@ -28,7 +27,6 @@ void ledStartFrame() {
 }
 
 void ledEndFrame(uint16_t count) {
-  //Serial.println("endFrame");
   ledWriteByte(0xFF);
   ledWriteByte(0xFF);
   ledWriteByte(0xFF);
@@ -47,7 +45,6 @@ void ledWriteColor(colorRGBB color) {
 }
 
 void ledWriteColors(colorRGBB* colors, uint16_t count) {
-  //Serial.println("writeColors");
   ledStartFrame();
   for (uint16_t i = 0; i < count; i++) {
     ledWriteColor(colors[i]);
@@ -95,7 +92,6 @@ void yellowOn () {
   ledWriteColors(LED_STATE, LEDARRAYSIZE);
 }
 
-// rgb(250, 128, 114)
 void salmonOn () {
   for (uint8_t led = 0; led < LEDARRAYSIZE; led++) {
     LED_STATE[led].red = 64;
@@ -121,5 +117,39 @@ void initLedArray() {
   pinMode(LEDDATAPIN, OUTPUT);
   digitalWrite(LEDCLOCKPIN, LOW);
   pinMode(LEDCLOCKPIN, OUTPUT);
+  allLedsOff();
+}
+
+void ledCriticalAlert () {
+  redOn();
+  delay(5);
+  allLedsOff();
+  delay(5);
+  redOn();
+  delay(5);
+  allLedsOff();
+  delay(5);
+  redOn();
+  delay(5);
+  allLedsOff();
+}
+
+void ledCautionAlert() {
+  yellowOn();
+  delay(5);
+  allLedsOff();
+  delay(5);
+  yellowOn();
+  delay(5);
+  allLedsOff();
+  delay(5);
+  yellowOn();
+  delay(5);
+  allLedsOff();
+}
+
+void ledReceiveAlert() {
+  salmonOn();
+  delay(10);
   allLedsOff();
 }

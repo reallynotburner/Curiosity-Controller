@@ -1,7 +1,8 @@
 # Curiosity-Rover
 
 <p style="text-align: center;">
-    <img src="./Curiosity_Selfie.png" style="width: 50%" />
+    <img src="./Mars_Rover_Asbuilt.png" style="width: 40%" />
+    <img src="./Curiosity_Selfie.png" style="width: 40%" />
 </p>
 
 ## Goal

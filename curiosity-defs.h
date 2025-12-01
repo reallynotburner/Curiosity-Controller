@@ -153,20 +153,20 @@ void spin(float horizontal) {
     unsigned int mappedHorizontal = (unsigned int) abs(horizontal * 255.0);
 
     if (horizontal > 0) {
-      digitalWrite(AN1, HIGH);
-      digitalWrite(AN2, LOW);
-      analogWrite(PWM01, mappedHorizontal);
-      digitalWrite(BN1, LOW);
-      digitalWrite(BN2, HIGH);
-      analogWrite(PWM02, mappedHorizontal);
-      Serial.print("spin right: ");
-      Serial.println(mappedHorizontal);
-    } else {
       digitalWrite(AN1, LOW);
       digitalWrite(AN2, HIGH);
       analogWrite(PWM01, mappedHorizontal);
       digitalWrite(BN1, HIGH);
       digitalWrite(BN2, LOW);
+      analogWrite(PWM02, mappedHorizontal);
+      Serial.print("spin right: ");
+      Serial.println(mappedHorizontal);
+    } else {
+      digitalWrite(AN1, HIGH);
+      digitalWrite(AN2, LOW);
+      analogWrite(PWM01, mappedHorizontal);
+      digitalWrite(BN1, LOW);
+      digitalWrite(BN2, HIGH);
       analogWrite(PWM02, mappedHorizontal);
       // Serial.print("spin left: ");
       // Serial.println(mappedHorizontal);

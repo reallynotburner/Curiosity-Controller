@@ -1,7 +1,7 @@
 # Curiosity-Rover
 
 <p style="text-align: center;">
-    <img src="./Mars_Rover_Asbuilt.png" style="width: 40%" />
+    <img src="./Mars_Rover_Asbuilt.jpeg" style="width: 40%" />
     <img src="./Curiosity_Selfie.png" style="width: 40%" />
 </p>
 
@@ -30,9 +30,6 @@ Uses standard web page interface, served via access point protocol. Open your ph
 ### Motor Driver
 [DRV8833 H-Bridges](https://www.amazon.com/VKLSVAN-DRV8833-h-Bridge-Arduino-Microcontroller/dp/B0DQGQ1V1C) provide control of 2 motors per module, so there will be 3 of these on the model for driving.
 
-### 10k Potentiometers
-[Potentiometers](https://www.amazon.com/Taiss-Potentiometer-Variable-Resistors-Terminals/dp/B09XDR799P) are often used as volume controls.  I'm using them as a position sensor for the steerable wheels.  They convert an angle of the steering bracket into a voltage, which can be a feedback signal for standard hobby servo motor PCB's.
-
 ### Code Acknowledgements
 - [Arduino platform](https://www.arduino.cc/) for their wonderful hardware & programming environment, start here if you want to build anything but don't know how to do any of it.
 - [Fritzing GmbH](https://fritzing.org/) for their wiring schematic and PCB generation platform.
@@ -42,4 +39,4 @@ Uses standard web page interface, served via access point protocol. Open your ph
 - [Rui Santos & Sara Santos Random Nerd Tutorials](https://RandomNerdTutorials.com/esp32-websocket-server-sensor/) for their websocket demo for ESP32 and Web, enabling real-time control from the app to the rover.
 - [Yoann Moinet](https://github.com/yoannmoinet/nipplejs) for his ephemeral and intuitive joystick library "NippleJS".
 - [Kevin Harrington and John K. Bennet](https://madhephaestus.github.io/ESP32Servo/annotated.html) for their ESP32 compatible PWM library, I couldn't make the default Espressif implementation work.
-- [Benoit Blanchon](https://arduinojson.org/?utm_source=meta&utm_medium=library.properties) for his ArduinoJson library, making the two-way communication protocal simple, and transferrable across web, wifi and http.
+- [Benoit Blanchon](https://arduinojson.org/?utm_source=meta&utm_medium=library.properties) for his ArduinoJson library, making the two-way communication protocol simple, and transferrable across web, wifi and http.
